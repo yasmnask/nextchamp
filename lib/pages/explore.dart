@@ -155,14 +155,18 @@ class _ExplorePageState extends State<ExplorePage> {
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: Color(0xFF64748B), // slate-500
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Click here to search the course!',
-                  style: TextStyle(color: Colors.white, fontSize: 14),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontFamily: 'Times New Roman',
+                  ),
                 ),
                 Row(
                   children: [
@@ -253,16 +257,23 @@ class _ExplorePageState extends State<ExplorePage> {
           itemCount: courses.length,
           itemBuilder: (context, index) {
             return Container(
-              margin: EdgeInsets.only(bottom: 16),
+              margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: courses[index]['color'] as Color,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
+                    color: Colors.black.withOpacity(0.18),
+                    blurRadius: 15,
+                    offset: Offset(0, 9),
+                    spreadRadius: 7,
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 6,
+                    offset: Offset(0, 10),
+                    spreadRadius: 8,
                   ),
                 ],
               ),
@@ -281,19 +292,12 @@ class _ExplorePageState extends State<ExplorePage> {
                                   color: Color(0xFF1E293B),
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
+                                  fontFamily: 'Times New Roman',
                                 ),
                               ),
                             ),
                             if (courses[index]['questionMarks'] == true) ...[
                               SizedBox(width: 8),
-                              Text(
-                                '? ? ?',
-                                style: TextStyle(
-                                  color: Color(0xFFEF4444),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
                             ],
                           ],
                         ),
@@ -301,9 +305,10 @@ class _ExplorePageState extends State<ExplorePage> {
                         Text(
                           courses[index]['subtitle'] as String,
                           style: TextStyle(
-                            color: Color(0xFF64748B),
+                            color: Color.fromARGB(255, 46, 57, 72),
                             fontSize: 14,
                             height: 1.4,
+                            fontFamily: 'Times New Roman',
                           ),
                         ),
                       ],
@@ -336,7 +341,7 @@ class _ExplorePageState extends State<ExplorePage> {
   Widget _buildBottomNavigation() {
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xFF475569), // slate-600
+        color: Color(0xFF1E293B), // slate-600
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -367,7 +372,7 @@ class _ExplorePageState extends State<ExplorePage> {
     bool isSelected = _selectedIndex == index;
 
     return GestureDetector(
-      onTap: () => _onItemTapped(index), // Gunakan fungsi navigasi
+      onTap: () => _onItemTapped(index),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
