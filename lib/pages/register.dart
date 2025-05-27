@@ -123,14 +123,14 @@ class _RegisterPageState extends State<RegisterPage> {
                             style: TextStyle(
                               fontSize: 14,
                               color: Color(0xFF3498DB),
-                              decoration: TextDecoration.underline,
+                            
                             ),
                           ),
                         ),
                       ],
                     ),
                     
-                    SizedBox(height: 40),
+                    SizedBox(height: 20),
                     
                     // Form
                     Form(
@@ -144,14 +144,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 12,
                                 color: Color(0xFF2C3E50),
                               ),
                               decoration: InputDecoration(
                                 hintText: 'E-mail',
                                 hintStyle: TextStyle(
                                   color: Color(0xFF95A5A6),
-                                  fontSize: 16,
+                                  fontSize: 12,
                                 ),
                                 filled: true,
                                 fillColor: Colors.white.withOpacity(0.8),
@@ -177,8 +177,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                 ),
                                 contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 16,
+                                  horizontal: 10,
+                                  vertical: 10,
                                 ),
                               ),
                               validator: (value) {
@@ -197,14 +197,14 @@ class _RegisterPageState extends State<RegisterPage> {
                             child: TextFormField(
                               controller: _usernameController,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 12,
                                 color: Color(0xFF2C3E50),
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Username',
                                 hintStyle: TextStyle(
                                   color: Color(0xFF95A5A6),
-                                  fontSize: 16,
+                                  fontSize: 12,
                                 ),
                                 filled: true,
                                 fillColor: Colors.white.withOpacity(0.8),
@@ -230,8 +230,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                 ),
                                 contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 16,
+                                  horizontal: 10,
+                                  vertical: 10,
                                 ),
                               ),
                               validator: (value) {
@@ -251,14 +251,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               controller: _passwordController,
                               obscureText: true,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 12,
                                 color: Color(0xFF2C3E50),
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Password',
                                 hintStyle: TextStyle(
                                   color: Color(0xFF95A5A6),
-                                  fontSize: 16,
+                                  fontSize: 12,
                                 ),
                                 filled: true,
                                 fillColor: Colors.white.withOpacity(0.8),
@@ -284,8 +284,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                 ),
                                 contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 16,
+                                  horizontal: 10,
+                                  vertical: 10,
                                 ),
                               ),
                               validator: (value) {
@@ -300,47 +300,47 @@ class _RegisterPageState extends State<RegisterPage> {
                           
                           // Sign Up button
                           Container(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  // TODO: Implement registration API call
-                                  // TODO: Add loading state
-                                  // TODO: Handle registration success/error
-                                  
-                                  print('Email: ${_emailController.text}');
-                                  print('Username: ${_usernameController.text}');
-                                  print('Password: ${_passwordController.text}');
-                                  
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => LoginPage()),
-                                  );
-                                  
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Registration successful! Please login.')),
-                                  );
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF2C3E50),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                elevation: 2,
-                                shadowColor: Colors.black26,
-                              ),
-                              child: Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
+  width: 200, // Lebar tetap, sesuaikan sesuai keinginan
+  height: 40,
+  child: ElevatedButton(
+    onPressed: () {
+      if (_formKey.currentState!.validate()) {
+        // TODO: Implement registration API call
+        // TODO: Add loading state
+        // TODO: Handle registration success/error
+        
+        print('Email: ${_emailController.text}');
+        print('Username: ${_usernameController.text}');
+        print('Password: ${_passwordController.text}');
+        
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration successful! Please login.')),
+        );
+      }
+    },
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Color(0xFF2C3E50),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      elevation: 2,
+      shadowColor: Colors.black26,
+    ),
+    child: Text(
+      'Sign Up',
+      style: TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: Colors.white,
+      ),
+    ),
+  ),
+),
                         ],
                       ),
                     ),
