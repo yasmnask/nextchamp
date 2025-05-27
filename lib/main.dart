@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nextchamp/pages/homepage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:nextchamp/pages/register.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
@@ -10,13 +10,17 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'NextChamp',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        fontFamily: 'Roboto',
+      ),
+      // PERBAIKI: Ubah dari register() menjadi RegisterPage()
+      home: const RegisterPage(),
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
     );
   }
 }
