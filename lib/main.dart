@@ -15,7 +15,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'NextChamp',
       theme: ThemeData(fontFamily: 'Roboto'),
-      // PERBAIKI: Ubah dari register() menjadi RegisterPage()
       home: const RegisterPage(),
       debugShowCheckedModeBanner: false,
     );
