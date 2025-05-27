@@ -3,7 +3,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nextchamp/pages/register.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: ".env").catchError((e) {
+    print('Env file not found, using defaults');
+  });
   runApp(MyApp());
 }
 
