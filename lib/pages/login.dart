@@ -99,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                             style: TextStyle(
                               fontSize: 14,
                               color: Color(0xFF3498DB),
-                              decoration: TextDecoration.underline,
+                              
                             ),
                           ),
                         ),
@@ -120,14 +120,14 @@ class _LoginPageState extends State<LoginPage> {
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 12,
                                 color: Color(0xFF2C3E50),
                               ),
                               decoration: InputDecoration(
-                                hintText: 'E-mail or Username',
+                                hintText: 'E-mail',
                                 hintStyle: TextStyle(
                                   color: Color(0xFF95A5A6),
-                                  fontSize: 16,
+                                  fontSize: 12,
                                 ),
                                 filled: true,
                                 fillColor: Colors.white.withOpacity(0.8),
@@ -174,14 +174,14 @@ class _LoginPageState extends State<LoginPage> {
                               controller: _passwordController,
                               obscureText: !_isPasswordVisible,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 12,
                                 color: Color(0xFF2C3E50),
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Password',
                                 hintStyle: TextStyle(
                                   color: Color(0xFF95A5A6),
-                                  fontSize: 16,
+                                  fontSize: 12,
                                 ),
                                 filled: true,
                                 fillColor: Colors.white.withOpacity(0.8),
@@ -233,33 +233,13 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           
-                          // Forgot Password link
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: GestureDetector(
-                              onTap: () {
-                                // TODO: Implement forgot password functionality
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Forgot password feature coming soon!')),
-                                );
-                              },
-                              child: Text(
-                                'Forgot Password?',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFF3498DB),
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ),
                           
-                          SizedBox(height: 30),
+                          SizedBox(height: 20),
                           
                           // Login button
                           Container(
-                            width: double.infinity,
-                            height: 50,
+                            width: 200,
+                            height: 40,
                             child: ElevatedButton(
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
@@ -285,7 +265,7 @@ class _LoginPageState extends State<LoginPage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFF2C3E50),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
                                 elevation: 2,
                                 shadowColor: Colors.black26,
@@ -293,7 +273,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: Text(
                                 'Login',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white,
                                 ),
@@ -304,22 +284,7 @@ class _LoginPageState extends State<LoginPage> {
                           SizedBox(height: 30),
                           
                           // Social login section
-                          Row(
-                            children: [
-                              Expanded(child: Divider(color: Color(0xFFE8EAED))),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
-                                child: Text(
-                                  'Or continue with',
-                                  style: TextStyle(
-                                    color: Color(0xFF7F8C8D),
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                              Expanded(child: Divider(color: Color(0xFFE8EAED))),
-                            ],
-                          ),
+                        
                           
                           SizedBox(height: 20),
                           
@@ -327,67 +292,7 @@ class _LoginPageState extends State<LoginPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              // Google login
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Color(0xFFE8EAED)),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 4,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: IconButton(
-                                  onPressed: () {
-                                    // TODO: Implement Google login
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Google login coming soon!')),
-                                    );
-                                  },
-                                  icon: Icon(
-                                    Icons.g_mobiledata,
-                                    size: 30,
-                                    color: Color(0xFF4285F4),
-                                  ),
-                                ),
-                              ),
-                              
-                              // Facebook login
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Color(0xFFE8EAED)),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 4,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: IconButton(
-                                  onPressed: () {
-                                    // TODO: Implement Facebook login
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Facebook login coming soon!')),
-                                    );
-                                  },
-                                  icon: Icon(
-                                    Icons.facebook,
-                                    size: 30,
-                                    color: Color(0xFF1877F2),
-                                  ),
-                                ),
-                              ),
+                             
                             ],
                           ),
                         ],
