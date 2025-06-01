@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nextchamp/pages/homepage.dart';
+import 'package:nextchamp/pages/home_page.dart';
 
 class ExplorePage extends StatefulWidget {
   @override

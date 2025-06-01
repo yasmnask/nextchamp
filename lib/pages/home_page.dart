@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nextchamp/pages/explore.dart';
+import 'package:nextchamp/pages/explore_page.dart';
+import 'package:nextchamp/pages/login_page.dart';
+import 'package:nextchamp/services/auth_service.dart';
+import 'package:nextchamp/widgets/header_homepage.dart';
+import 'package:nextchamp/widgets/profile_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,6 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 2; // Home tab selected by default
+  final _authService = AuthService();
 
   void _onItemTapped(int index) {
     setState(() {
@@ -31,10 +36,8 @@ class _HomePageState extends State<HomePage> {
         // Sudah di Home, tidak perlu navigasi
         break;
       case 3: // Course Bot
-        // TODO: Navigasi ke Course Bot page
         break;
       case 4: // Mentor
-        // TODO: Navigasi ke Mentor page
         break;
     }
   }
@@ -44,13 +47,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background color for the entire screen
-          Container(
-            color: Color(0xFFF3F4F6), // gray-100 background
-          ),
+          Container(color: Color(0xFFF3F4F6)),
           Column(
             children: [
-              // Header section with curved bottom - FIXED (tidak kena scroll)
               ClipPath(
                 clipper: CurvedBottomClipper(),
                 child: Container(
@@ -58,7 +57,7 @@ class _HomePageState extends State<HomePage> {
                   child: SafeArea(
                     child: Column(
                       children: [
-                        _buildHeader(),
+                        HeaderHomepage(),
                         _buildUserProfile(),
                         _buildSearchBar(),
                         SizedBox(height: 20), // Space for the curve
@@ -67,7 +66,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              // Scrollable content - MULAI DARI SINI
+
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -88,206 +87,6 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: _buildBottomNavigation(),
     );
-  }
-
-  Widget _buildHeader() {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(24, 16, 24, 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              // Replace the static Icon with PopupMenuButton
-              PopupMenuButton<String>(
-                icon: Icon(Icons.settings, color: Colors.white, size: 24),
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                offset: Offset(0, 40), // Position dropdown below the icon
-                onSelected: (String value) {
-                  _handleMenuSelection(value);
-                },
-                itemBuilder: (BuildContext context) => [
-                  PopupMenuItem<String>(
-                    value: 'edit_profile',
-                    child: Row(
-                      children: [
-                        Icon(Icons.edit, color: Color(0xFF334155), size: 20),
-                        SizedBox(width: 12),
-                        Text(
-                          'Edit Profile',
-                          style: TextStyle(
-                            color: Color(0xFF334155),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem<String>(
-                    value: 'logout',
-                    child: Row(
-                      children: [
-                        Icon(Icons.logout, color: Color(0xFFEF4444), size: 20),
-                        SizedBox(width: 12),
-                        Text(
-                          'Log Out',
-                          style: TextStyle(
-                            color: Color(0xFFEF4444),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: 12),
-              Text(
-                'Welcome, Yasmin!',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-          Icon(Icons.notifications_outlined, color: Colors.white, size: 24),
-        ],
-      ),
-    );
-  }
-
-  // Add this method to handle menu selections
-  void _handleMenuSelection(String value) {
-    switch (value) {
-      case 'edit_profile':
-        _showEditProfileDialog();
-        break;
-      case 'logout':
-        _showLogoutDialog();
-        break;
-    }
-  }
-
-  // Method to show edit profile dialog
-  void _showEditProfileDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Row(
-            children: [
-              Icon(Icons.edit, color: Color(0xFF334155)),
-              SizedBox(width: 8),
-              Text(
-                'Edit Profile',
-                style: TextStyle(
-                  color: Color(0xFF334155),
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          content: Text(
-            'Edit profile functionality will be implemented here.',
-            style: TextStyle(color: Color(0xFF64748B), fontSize: 14),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // TODO: Navigate to edit profile page
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF8FA2B7),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text('Edit', style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Method to show logout confirmation dialog
-  void _showLogoutDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Row(
-            children: [
-              Icon(Icons.logout, color: Color(0xFFEF4444)),
-              SizedBox(width: 8),
-              Text(
-                'Log Out',
-                style: TextStyle(
-                  color: Color(0xFF334155),
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          content: Text(
-            'Are you sure you want to log out?',
-            style: TextStyle(color: Color(0xFF64748B), fontSize: 14),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _performLogout();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFEF4444),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text('Log Out', style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Method to perform actual logout
-  void _performLogout() {
-    // TODO: Implement logout logic here
-    // For example:
-    // - Clear user session/tokens
-    // - Navigate to login page
-    // - Clear user data from local storage
-
-    print('User logged out');
-    // Example navigation to login page:
-    // Navigator.pushReplacementNamed(context, '/login');
   }
 
   Widget _buildUserProfile() {
@@ -322,29 +121,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Zakiyah Yasmin',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontFamily: 'Times New Roman',
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    'Level 3',
-                    style: TextStyle(
-                      color: Color(0xFFE2E8F0), // slate-200
-                      fontSize: 14,
-                      fontFamily: 'poppins',
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
+              ProfileSection(),
             ],
           ),
           Container(
