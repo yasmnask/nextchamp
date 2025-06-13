@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:nextchamp/animations/fade_page_route.dart';
+import 'package:nextchamp/animations/slide_page_route.dart';
 import 'package:nextchamp/components/bottom_navigation.dart';
 import 'package:nextchamp/pages/register_page.dart';
 import 'package:nextchamp/pages/home_page.dart';
+import 'package:nextchamp/providers/user_provider.dart';
 import 'package:nextchamp/services/auth_service.dart';
 import 'package:nextchamp/widgets/custom_toast.dart';
+import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
 class LoginPage extends StatefulWidget {
@@ -34,9 +37,11 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
       final result = await _authService.login(
         _emailController.text.trim(),
         _passwordController.text,
+        userProvider,
       );
 
       if (result.success) {

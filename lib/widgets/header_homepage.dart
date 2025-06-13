@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:nextchamp/core/secure_storage.dart';
-import 'package:nextchamp/models/user_model.dart';
 import 'package:nextchamp/pages/login_page.dart';
+import 'package:nextchamp/providers/user_provider.dart';
 import 'package:nextchamp/services/auth_service.dart';
+import 'package:nextchamp/utils/string_utils.dart';
 import 'package:nextchamp/widgets/custom_toast.dart';
+import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:toastification/toastification.dart';
 
 class HeaderHomepage extends StatefulWidget {
@@ -14,31 +16,15 @@ class HeaderHomepage extends StatefulWidget {
 }
 
 class _HeaderHomepageState extends State<HeaderHomepage> {
-  User? _user;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUser();
-  }
-
-  Future<void> _loadUser() async {
-    final user = await SecureStorage.getUser();
-    setState(() {
-      _user = user;
-    });
-  }
-
   final _authService = AuthService();
 
-  // Add this method to handle menu selections
-  void _handleMenuSelection(String value) {
+  void _handleMenuSelection(String value, UserProvider userProvider) {
     switch (value) {
       case 'edit_profile':
         _showEditProfileDialog();
         break;
       case 'logout':
-        _showLogoutDialog();
+        _showLogoutDialog(userProvider);
         break;
     }
   }
@@ -95,7 +81,7 @@ class _HeaderHomepageState extends State<HeaderHomepage> {
   }
 
   // Method to show logout confirmation dialog
-  void _showLogoutDialog() {
+  void _showLogoutDialog(UserProvider userProvider) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -129,7 +115,7 @@ class _HeaderHomepageState extends State<HeaderHomepage> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                _performLogout();
+                _performLogout(userProvider);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFEF4444),
@@ -145,29 +131,30 @@ class _HeaderHomepageState extends State<HeaderHomepage> {
     );
   }
 
-  void _performLogout() async {
-    await _authService.logout();
+  void _performLogout(UserProvider userProvider) async {
+    await _authService.logout(userProvider);
 
-    if (context.mounted) {
-      CustomToast.show(
-        context,
-        title: 'Success',
-        message: 'Anda Berhasil Logout!',
-        type: ToastificationType.success,
-      );
-    }
+    if (!mounted) return;
+
+    CustomToast.show(
+      context,
+      title: 'Success',
+      message: 'Anda Berhasil Logout!',
+      type: ToastificationType.success,
+    );
 
     // Navigasi ke halaman login (clear all previous routes)
-    if (context.mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginPage()),
-        (Route<dynamic> route) => false,
-      );
-    }
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = userProvider.user;
+
     return Padding(
       padding: EdgeInsets.fromLTRB(24, 16, 24, 24),
       child: Row(
@@ -184,7 +171,7 @@ class _HeaderHomepageState extends State<HeaderHomepage> {
                 ),
                 offset: Offset(0, 40), // Position dropdown below the icon
                 onSelected: (String value) {
-                  _handleMenuSelection(value);
+                  _handleMenuSelection(value, userProvider);
                 },
                 itemBuilder: (BuildContext context) => [
                   PopupMenuItem<String>(
@@ -224,14 +211,24 @@ class _HeaderHomepageState extends State<HeaderHomepage> {
                 ],
               ),
               SizedBox(width: 12),
-              Text(
-                _user != null ? 'Welcome, ${_user!.username}!' : 'Loading...',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              user != null
+                  ? Text(
+                      'Welcome, ${StringUtils.capitalizeWords(user.username)}!',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    )
+                  : Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        width: 100,
+                        height: 20,
+                        color: Colors.white,
+                      ),
+                    ),
             ],
           ),
           Icon(Icons.notifications_outlined, color: Colors.white, size: 24),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:nextchamp/animations/fade_page_route.dart';
 import 'package:nextchamp/components/bottom_navigation.dart';
 import 'package:nextchamp/core/secure_storage.dart';
-import 'package:nextchamp/pages/home_page.dart';
+import 'package:nextchamp/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../utils/api_utils.dart';
 import 'login_page.dart';
@@ -14,16 +16,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  @override
-  void initState() {
-    super.initState();
-    _loadUser();
-  }
-
-  void _loadUser() async {
-    await SecureStorage.clearAll();
-  }
-
   final _emailController = TextEditingController();
   final _usernameController = TextEditingController();
   final _fullnameController = TextEditingController();
@@ -65,12 +57,14 @@ class _RegisterPageState extends State<RegisterPage> {
       );
 
       if (result.success) {
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
         final Map<String, dynamic>? userMap = result.data?['user'];
         final int? userId = userMap?['id'];
         try {
           final updateResult = await _authService.updateProfile(
             fullname: _fullnameController.text.trim(),
             id: userId,
+            userProvider: userProvider,
           );
 
           if (updateResult.success) {
@@ -110,12 +104,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    // Navigate to home or dashboard
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => BottomNavigation(),
-                      ),
+                      FadePageRoute(page: BottomNavigation()),
                     );
                   },
                   style: ElevatedButton.styleFrom(

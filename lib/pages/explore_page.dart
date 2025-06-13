@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nextchamp/components/bottom_navigation.dart';
-import 'package:nextchamp/pages/home_page.dart';
+import 'package:nextchamp/models/user_model.dart';
+import 'package:nextchamp/providers/user_provider.dart';
+import 'package:nextchamp/utils/string_utils.dart';
+import 'package:provider/provider.dart';
 
 class ExplorePage extends StatefulWidget {
   @override
@@ -10,6 +12,8 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage> {
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<UserProvider>(context, listen: false).user;
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -25,7 +29,7 @@ class _ExplorePageState extends State<ExplorePage> {
         child: SafeArea(
           child: Column(
             children: [
-              _buildHeader(),
+              _buildHeader(user),
               Expanded(child: _buildScrollableContent()),
             ],
           ),
@@ -34,7 +38,7 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(User? user) {
     return Padding(
       padding: EdgeInsets.all(20.0),
       child: Column(
@@ -54,7 +58,9 @@ class _ExplorePageState extends State<ExplorePage> {
                     ),
                     child: Center(
                       child: Text(
-                        'ZY',
+                        user != null
+                            ? StringUtils.getInitials(user.fullname)
+                            : 'NC',
                         style: TextStyle(
                           color: Color(0xFF9A3412), // orange-800
                           fontSize: 14,
@@ -68,7 +74,9 @@ class _ExplorePageState extends State<ExplorePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Zakiyah Yasmin!',
+                        StringUtils.capitalizeWords(
+                          StringUtils.takeFirstWords(user!.fullname, 2),
+                        ),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:nextchamp/components/bottom_navigation.dart';
-import 'package:nextchamp/pages/explore_page.dart';
-import 'package:nextchamp/pages/login_page.dart';
-import 'package:nextchamp/services/auth_service.dart';
+import 'package:nextchamp/models/user_model.dart';
+import 'package:nextchamp/providers/user_provider.dart';
+import 'package:nextchamp/utils/string_utils.dart';
 import 'package:nextchamp/widgets/header_homepage.dart';
 import 'package:nextchamp/widgets/profile_section.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,10 +14,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _authService = AuthService();
-
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<UserProvider>(context, listen: false).user;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       children: [
                         HeaderHomepage(),
-                        _buildUserProfile(),
+                        _buildUserProfile(user),
                         _buildSearchBar(),
                         SizedBox(height: 20), // Space for the curve
                       ],
@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildUserProfile() {
+  Widget _buildUserProfile(User? user) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24.0),
       child: Row(
@@ -82,7 +82,9 @@ class _HomePageState extends State<HomePage> {
                     color: Color(0xFFFED7AA), // orange-200
                     child: Center(
                       child: Text(
-                        'ZY',
+                        user != null
+                            ? StringUtils.getInitials(user.fullname)
+                            : 'NC',
                         style: TextStyle(
                           color: Color(0xFF9A3412), // orange-800
                           fontSize: 18,
