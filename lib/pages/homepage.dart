@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nextchamp/pages/explore.dart';
+import 'load_chatbot.dart'; // Import load_chatbot screen
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,8 +31,11 @@ class _HomePageState extends State<HomePage> {
       case 2: // Home
         // Sudah di Home, tidak perlu navigasi
         break;
-      case 3: // Course Bot
-        // TODO: Navigasi ke Course Bot page
+      case 3: // Course Bot - Navigate to LoadChatbotScreen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoadChatbotScreen()),
+        );
         break;
       case 4: // Mentor
         // TODO: Navigasi ke Mentor page
@@ -73,7 +77,7 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     children: [
                       SizedBox(height: 10), // Jarak kecil dari lengkungan
-                      // ChatBot section
+                      // ChatBot section - Make it clickable
                       _buildChatBot(),
                       SizedBox(height: 0), // Kontrol manual jarak antar section
                       // Content section
@@ -254,67 +258,76 @@ class _HomePageState extends State<HomePage> {
   Widget _buildChatBot() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24.0),
-      child: Container(
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Color(0xFF475569), // slate-600 - darker for contrast
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Hi! Wanna ask me?',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontFamily: 'Times New Roman',
-                fontWeight: FontWeight.w700,
+      child: GestureDetector(
+        onTap: () {
+          // Navigate to LoadChatbotScreen when chatbot section is tapped
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => LoadChatbotScreen()),
+          );
+        },
+        child: Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Color(0xFF475569), // slate-600 - darker for contrast
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 4,
+                offset: Offset(0, 2),
               ),
-            ),
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: Color(0xFF60A5FA), // blue-400
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Hi! Wanna ask me?',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: 'Times New Roman',
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-              child: Center(
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: Color(0xFF60A5FA),
-                        shape: BoxShape.circle,
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Color(0xFF60A5FA), // blue-400
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: Color(0xFF60A5FA),
+                          shape: BoxShape.circle,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
