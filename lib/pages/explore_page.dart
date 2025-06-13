@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nextchamp/components/bottom_navigation.dart';
 import 'package:nextchamp/pages/home_page.dart';
 
 class ExplorePage extends StatefulWidget {
@@ -7,36 +8,6 @@ class ExplorePage extends StatefulWidget {
 }
 
 class _ExplorePageState extends State<ExplorePage> {
-  int _selectedIndex = 1; // Explore tab selected
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    // Navigasi berdasarkan tab yang dipilih
-    switch (index) {
-      case 0: // Community
-        // TODO: Navigasi ke Community page
-        break;
-      case 1: // Explore
-        // Sudah di Explore, tidak perlu navigasi
-        break;
-      case 2: // Home
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
-        break;
-      case 3: // Course Bot
-        // TODO: Navigasi ke Course Bot page
-        break;
-      case 4: // Mentor
-        // TODO: Navigasi ke Mentor page
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +31,6 @@ class _ExplorePageState extends State<ExplorePage> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigation(),
     );
   }
 
@@ -243,156 +213,99 @@ class _ExplorePageState extends State<ExplorePage> {
       },
     ];
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Color(0xFFF8FAFC), // Very light gray
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
+    return ClipRRect(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(24),
+        topRight: Radius.circular(24),
       ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: ListView.builder(
-          itemCount: courses.length,
-          itemBuilder: (context, index) {
-            return Container(
-              margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: courses[index]['color'] as Color,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.18),
-                    blurRadius: 15,
-                    offset: Offset(0, 9),
-                    spreadRadius: 7,
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 6,
-                    offset: Offset(0, 10),
-                    spreadRadius: 8,
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+      child: Container(
+        color: Color(0xFFF8FAFC),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.only(top: 20),
+                physics: BouncingScrollPhysics(),
+                itemCount: courses.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: courses[index]['color'] as Color,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.19),
+                          blurRadius: 25,
+                          offset: Offset(0, 8),
+                          spreadRadius: 4,
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.06),
+                          blurRadius: 6,
+                          offset: Offset(0, 10),
+                          spreadRadius: 8,
+                        ),
+                      ],
+                    ),
+                    child: Row(
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                courses[index]['title'] as String,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      courses[index]['title'] as String,
+                                      style: TextStyle(
+                                        color: Color(0xFF1E293B),
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'Times New Roman',
+                                      ),
+                                    ),
+                                  ),
+                                  if (courses[index]['questionMarks'] ==
+                                      true) ...[
+                                    SizedBox(width: 8),
+                                  ],
+                                ],
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                courses[index]['subtitle'] as String,
                                 style: TextStyle(
-                                  color: Color(0xFF1E293B),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
+                                  color: Color.fromARGB(255, 46, 57, 72),
+                                  fontSize: 14,
+                                  height: 1.4,
                                   fontFamily: 'Times New Roman',
                                 ),
                               ),
-                            ),
-                            if (courses[index]['questionMarks'] == true) ...[
-                              SizedBox(width: 8),
                             ],
-                          ],
+                          ),
                         ),
-                        SizedBox(height: 8),
-                        Text(
-                          courses[index]['subtitle'] as String,
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 46, 57, 72),
-                            fontSize: 14,
-                            height: 1.4,
-                            fontFamily: 'Times New Roman',
+                        SizedBox(width: 16),
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Text(
+                              courses[index]['illustration'] as String,
+                              style: TextStyle(fontSize: 32),
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  SizedBox(width: 16),
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(
-                      child: Text(
-                        courses[index]['illustration'] as String,
-                        style: TextStyle(fontSize: 32),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigation() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Color(0xFF1E293B), // slate-600
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.people_outline, 'Community', 0),
-              _buildNavItem(Icons.public, 'Explore', 1),
-              _buildNavItem(Icons.home, 'Home', 2),
-              _buildNavItem(Icons.smart_toy_outlined, 'Course Bot', 3),
-              _buildNavItem(Icons.school_outlined, 'Mentor', 4),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    bool isSelected = _selectedIndex == index;
-
-    return GestureDetector(
-      onTap: () => _onItemTapped(index),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? Color(0xFF334155) : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.white : Color(0xFF94A3B8),
-              size: 24,
-            ),
-            SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Color(0xFF94A3B8),
-                fontSize: 12,
+                  );
+                },
               ),
             ),
           ],

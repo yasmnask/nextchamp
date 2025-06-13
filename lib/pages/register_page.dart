@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nextchamp/components/bottom_navigation.dart';
+import 'package:nextchamp/core/secure_storage.dart';
 import 'package:nextchamp/pages/home_page.dart';
 import '../services/auth_service.dart';
-import '../core/secure_storage.dart';
 import '../utils/api_utils.dart';
 import 'login_page.dart';
 
@@ -13,6 +14,16 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  void _loadUser() async {
+    await SecureStorage.clearAll();
+  }
+
   final _emailController = TextEditingController();
   final _usernameController = TextEditingController();
   final _fullnameController = TextEditingController();
@@ -102,7 +113,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     // Navigate to home or dashboard
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
+                      MaterialPageRoute(
+                        builder: (context) => BottomNavigation(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -691,34 +704,40 @@ class _RegisterPageState extends State<RegisterPage> {
                 SizedBox(height: 25),
 
                 // Login link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Already have an account? ',
-                      style: TextStyle(fontSize: 15, color: Color(0xFF2C3E50)),
-                    ),
-                    GestureDetector(
-                      onTap: _isLoading
-                          ? null
-                          : () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LoginPage(),
-                                ),
-                              );
-                            },
-                      child: Text(
-                        'Login here.',
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 40),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account? ',
                         style: TextStyle(
                           fontSize: 15,
-                          color: Color(0xFF3498DB),
-                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2C3E50),
                         ),
                       ),
-                    ),
-                  ],
+                      GestureDetector(
+                        onTap: _isLoading
+                            ? null
+                            : () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginPage(),
+                                  ),
+                                );
+                              },
+                        child: Text(
+                          'Login here.',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Color(0xFF3498DB),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

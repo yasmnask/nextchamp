@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nextchamp/components/bottom_navigation.dart';
 import 'package:nextchamp/pages/explore_page.dart';
 import 'package:nextchamp/pages/login_page.dart';
 import 'package:nextchamp/services/auth_service.dart';
@@ -13,34 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 2; // Home tab selected by default
   final _authService = AuthService();
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    // Navigasi berdasarkan tab yang dipilih
-    switch (index) {
-      case 0: // Community
-        // TODO: Navigasi ke Community page
-        break;
-      case 1: // Explore
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ExplorePage()),
-        );
-        break;
-      case 2: // Home
-        // Sudah di Home, tidak perlu navigasi
-        break;
-      case 3: // Course Bot
-        break;
-      case 4: // Mentor
-        break;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +59,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNavigation(),
     );
   }
 
@@ -139,11 +112,7 @@ class _HomePageState extends State<HomePage> {
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.star,
-                  color: Color.fromARGB(255, 254, 214, 68),
-                  size: 16,
-                ),
+                Icon(Icons.star, color: Color(0xFFFB923C), size: 15),
                 SizedBox(width: 8),
                 Text(
                   '3600 Stars',
@@ -153,12 +122,6 @@ class _HomePageState extends State<HomePage> {
                     fontFamily: 'poppins',
                     fontWeight: FontWeight.w500,
                   ),
-                ),
-                SizedBox(width: 8),
-                Icon(
-                  Icons.star,
-                  color: Color.fromARGB(255, 254, 214, 68),
-                  size: 16,
                 ),
               ],
             ),
@@ -286,9 +249,9 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             _buildCategoriesGrid(),
-            SizedBox(height: 24),
+            SizedBox(height: 25),
             _buildCourseRecommendation(),
-            SizedBox(height: 24),
+            SizedBox(height: 20),
             _buildCoursesGrid(),
             SizedBox(height: 20), // Space for bottom navigation
           ],
@@ -334,13 +297,13 @@ class _HomePageState extends State<HomePage> {
             child: Text(
               categories[index]['title'] as String,
               style: TextStyle(
-                color: Color(0xFF1F2937), // gray-800
-                fontSize: 12, // Font size diperkecil
-                fontFamily: 'Times New Roman', // Times New Roman font
+                color: Color(0xFF1F2937),
+                fontSize: 12,
+                fontFamily: 'Times New Roman',
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
-              maxLines: 2, // Maksimal 2 baris
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -437,7 +400,7 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Container(
-      padding: EdgeInsets.all(24),
+      padding: EdgeInsets.only(left: 24, right: 24, bottom: 24),
       decoration: BoxDecoration(
         color: Color(0xFF475569), // slate-600
         borderRadius: BorderRadius.circular(24),
@@ -452,15 +415,16 @@ class _HomePageState extends State<HomePage> {
       child: GridView.builder(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 24,
-          mainAxisSpacing: 24,
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 100,
+          mainAxisSpacing: 32,
+          crossAxisSpacing: 22,
           childAspectRatio: 0.8,
         ),
         itemCount: courses.length,
         itemBuilder: (context, index) {
           return Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 width: 56,
@@ -484,88 +448,27 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              SizedBox(height: 12),
-              Text(
-                courses[index]['title'] as String,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontFamily: 'Times New Roman', // Times New Roman font
-                  fontWeight: FontWeight.w500,
-                  height: 1.2,
+              SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: Text(
+                  courses[index]['title'] as String,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontFamily: 'Times New Roman',
+                    fontWeight: FontWeight.w500,
+                    height: 1.1,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigation() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Color(0xFF1E293B), // slate-800
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.people_outline, 'Community', 0),
-              _buildNavItem(Icons.public, 'Explore', 1),
-              _buildNavItem(Icons.home, 'Home', 2),
-              _buildNavItem(Icons.smart_toy_outlined, 'Course Bot', 3),
-              _buildNavItem(Icons.school_outlined, 'Mentor', 4),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    bool isSelected = _selectedIndex == index;
-
-    return GestureDetector(
-      onTap: () => _onItemTapped(index),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Color(0xFF334155)
-              : Colors.transparent, // slate-700
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.white : Color(0xFF94A3B8), // slate-300
-              size: 24,
-            ),
-            SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Color(0xFF94A3B8),
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

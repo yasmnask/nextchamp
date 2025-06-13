@@ -3,6 +3,8 @@ import 'package:nextchamp/core/secure_storage.dart';
 import 'package:nextchamp/models/user_model.dart';
 import 'package:nextchamp/pages/login_page.dart';
 import 'package:nextchamp/services/auth_service.dart';
+import 'package:nextchamp/widgets/custom_toast.dart';
+import 'package:toastification/toastification.dart';
 
 class HeaderHomepage extends StatefulWidget {
   const HeaderHomepage({super.key});
@@ -144,16 +146,14 @@ class _HeaderHomepageState extends State<HeaderHomepage> {
   }
 
   void _performLogout() async {
-    // Panggil logout dari service
     await _authService.logout();
 
-    // Optional: kasih snackbar biar user tahu logout sukses
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Logged out successfully!'),
-          backgroundColor: Colors.green,
-        ),
+      CustomToast.show(
+        context,
+        title: 'Success',
+        message: 'Anda Berhasil Logout!',
+        type: ToastificationType.success,
       );
     }
 
