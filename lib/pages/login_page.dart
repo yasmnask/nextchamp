@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nextchamp/animations/fade_page_route.dart';
+import 'package:nextchamp/components/bottom_navigation.dart';
 import 'package:nextchamp/pages/register_page.dart';
 import 'package:nextchamp/pages/home_page.dart';
 import 'package:nextchamp/services/auth_service.dart';
-
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:nextchamp/widgets/custom_snackbar.dart';
+import 'package:nextchamp/widgets/custom_toast.dart';
+import 'package:toastification/toastification.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -40,15 +40,16 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (result.success) {
-        Navigator.pushReplacement(context, FadePageRoute(page: HomePage()));
-
-        CustomSnackbar.show(
+        Navigator.pushReplacement(
           context,
-          title: 'Login Successful',
-          message: result.message ?? 'Welcome back!',
-          contentType: ContentType.success,
-          behavior: SnackBarBehavior.floating,
-          alignment: Alignment.topCenter,
+          FadePageRoute(page: BottomNavigation()),
+        );
+
+        CustomToast.show(
+          context,
+          title: 'Success',
+          message: 'Anda Berhasil Login!',
+          type: ToastificationType.success,
         );
       } else {
         // Show error message
@@ -81,8 +82,8 @@ class _LoginPageState extends State<LoginPage> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          Align(
-            alignment: Alignment.center,
+          Padding(
+            padding: const EdgeInsets.only(top: 100),
             child: Image.asset(
               "assets/bg_gradasi.png",
               width: double.infinity,
