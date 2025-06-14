@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:nextchamp/providers/bottom_navigation_provider.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
-import 'chatbot_screen.dart'; // Import the new chatbot screen
+import 'champbot_page.dart'; // Import the new chatbot screen
 
-class LoadChatbotScreen extends StatefulWidget {
+class LoadChatbotPage extends StatefulWidget {
   @override
-  _LoadChatbotScreenState createState() => _LoadChatbotScreenState();
+  _LoadChatbotPageState createState() => _LoadChatbotPageState();
 }
 
-class _LoadChatbotScreenState extends State<LoadChatbotScreen>
+class _LoadChatbotPageState extends State<LoadChatbotPage>
     with TickerProviderStateMixin {
   late AnimationController _robotAnimationController;
   late AnimationController _loadingAnimationController;
@@ -17,26 +19,25 @@ class _LoadChatbotScreenState extends State<LoadChatbotScreen>
   @override
   void initState() {
     super.initState();
-    
+
     // Robot animation controller
     _robotAnimationController = AnimationController(
       duration: Duration(seconds: 2),
       vsync: this,
     );
-    
+
     // Loading dots animation controller
     _loadingAnimationController = AnimationController(
       duration: Duration(milliseconds: 1500),
       vsync: this,
     );
 
-    _robotAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _robotAnimationController,
-      curve: Curves.elasticOut,
-    ));
+    _robotAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _robotAnimationController,
+        curve: Curves.elasticOut,
+      ),
+    );
 
     _loadingAnimation = Tween<double>(
       begin: 0.0,
@@ -47,12 +48,8 @@ class _LoadChatbotScreenState extends State<LoadChatbotScreen>
     _robotAnimationController.forward();
     _loadingAnimationController.repeat();
 
-    // Navigate to chatbot after 4 seconds
-    Timer(Duration(seconds: 4), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => ChatbotScreen()), // Updated to use new ChatbotScreen
-      );
+    Timer(Duration(seconds: 2), () {
+      context.read<BottomNavigationProvider>().setPage(3);
     });
   }
 
@@ -157,9 +154,9 @@ class _LoadChatbotScreenState extends State<LoadChatbotScreen>
                         );
                       },
                     ),
-                    
+
                     SizedBox(height: 30),
-                    
+
                     // Loading text
                     Text(
                       'Initializing Champ Bot...',
@@ -169,19 +166,16 @@ class _LoadChatbotScreenState extends State<LoadChatbotScreen>
                         color: Color(0xFF2C3E50),
                       ),
                     ),
-                    
+
                     SizedBox(height: 10),
-                    
+
                     Text(
                       'Your assistant to Win like a Champ!',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF7F8C8D),
-                      ),
+                      style: TextStyle(fontSize: 14, color: Color(0xFF7F8C8D)),
                     ),
-                    
+
                     SizedBox(height: 30),
-                    
+
                     // Loading dots animation
                     AnimatedBuilder(
                       animation: _loadingAnimation,
@@ -190,16 +184,20 @@ class _LoadChatbotScreenState extends State<LoadChatbotScreen>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: List.generate(3, (index) {
                             double delay = index * 0.3;
-                            double animationValue = (_loadingAnimation.value - delay).clamp(0.0, 1.0);
+                            double animationValue =
+                                (_loadingAnimation.value - delay).clamp(
+                                  0.0,
+                                  1.0,
+                                );
                             return Container(
                               margin: EdgeInsets.symmetric(horizontal: 4),
                               width: 12,
                               height: 12,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Color(0xFF3498DB).withOpacity(
-                                  0.3 + (0.7 * animationValue),
-                                ),
+                                color: Color(
+                                  0xFF3498DB,
+                                ).withOpacity(0.3 + (0.7 * animationValue)),
                               ),
                             );
                           }),
@@ -208,28 +206,6 @@ class _LoadChatbotScreenState extends State<LoadChatbotScreen>
                     ),
                   ],
                 ),
-              ),
-            ),
-            
-            // Bottom Navigation Bar
-            Container(
-              height: 70,
-              decoration: BoxDecoration(
-                color: Color(0xFF2C3E50),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildNavItem(Icons.people, 'Profile'),
-                  _buildNavItem(Icons.language, 'Global'),
-                  _buildNavItem(Icons.home, 'Home'),
-                  _buildNavItem(Icons.visibility, 'Discover'),
-                  _buildNavItem(Icons.chat_bubble, 'Chat', isActive: true),
-                ],
               ),
             ),
           ],
@@ -323,28 +299,6 @@ class _LoadChatbotScreenState extends State<LoadChatbotScreen>
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, {bool isActive = false}) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          icon,
-          color: isActive ? Color(0xFF3498DB) : Colors.white,
-          size: 24,
-        ),
-        SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isActive ? Color(0xFF3498DB) : Colors.white,
-            fontSize: 10,
-            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-          ),
-        ),
-      ],
     );
   }
 }

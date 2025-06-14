@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nextchamp/pages/champbot_page.dart';
 import 'package:nextchamp/pages/explore_page.dart';
 import 'package:nextchamp/pages/home_page.dart';
+import 'package:nextchamp/pages/load_chatbot_page.dart';
 import 'package:nextchamp/providers/bottom_navigation_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +18,7 @@ class _BottomNavigation extends State<BottomNavigation> {
     Center(child: Text('Community Page')),
     ExplorePage(),
     HomePage(),
-    Center(child: Text('Course Bot Page')),
+    LoadChatbotPage(),
     Center(child: Text('Mentor Page')),
   ];
 
@@ -27,6 +29,11 @@ class _BottomNavigation extends State<BottomNavigation> {
   @override
   Widget build(BuildContext context) {
     final navProvider = context.watch<BottomNavigationProvider>();
+
+    _pages[3] = (navProvider.champBotConfig)
+        ? ChampbotPage()
+        : LoadChatbotPage();
+
     return Scaffold(
       body: _pages[navProvider.currentIndex],
       bottomNavigationBar: Container(
@@ -54,7 +61,7 @@ class _BottomNavigation extends State<BottomNavigation> {
                 Expanded(
                   child: _buildNavItem(
                     Icons.smart_toy_outlined,
-                    'Course Bot',
+                    'Champ Bot',
                     3,
                   ),
                 ),
