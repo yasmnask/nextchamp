@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nextchamp/pages/explore.dart';
 import 'load_chatbot.dart'; // Import load_chatbot screen
+import 'list_mentor.dart'; // Import the new list_mentor screen
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -37,8 +38,11 @@ class _HomePageState extends State<HomePage> {
           MaterialPageRoute(builder: (context) => LoadChatbotScreen()),
         );
         break;
-      case 4: // Mentor
-        // TODO: Navigasi ke Mentor page
+      case 4: // Mentor - Navigate to ListMentorScreen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ListMentorScreen()),
+        );
         break;
     }
   }
