@@ -1,66 +1,34 @@
 class StrapiQueryBuilder {
   final List<String> _filters = [];
+  final List<String> _orFilters = [];
   final List<String> _sorts = [];
   final List<String> _selects = [];
   final List<String> _populates = [];
-  final List<String> _searches = [];
   int? _page;
   int? _pageSize;
 
-  // Add search filter
-  StrapiQueryBuilder search(String field, String value) {
-    _searches.add('filters[$field][\$containsi]=${Uri.encodeComponent(value)}');
-    return this;
-  }
-
-  // Add OR search filter
-  StrapiQueryBuilder orSearch(String field, String value) {
-    _searches.add(
-      'filters[\$or][0][$field][\$containsi]=${Uri.encodeComponent(value)}',
-    );
-    return this;
-  }
-
-  // Add filter
+  // Basic equals filter
   StrapiQueryBuilder filter(String field, dynamic value) {
-    if (value is String) {
-      _filters.add('filters[$field][\$eq]=${Uri.encodeComponent(value)}');
-    } else {
-      _filters.add('filters[$field][\$eq]=$value');
-    }
+    final val = value is String ? Uri.encodeComponent(value) : value;
+    final encodedField = field.replaceAll('.', ']['); // ganti dot jadi bracket
+    _filters.add('filters[$encodedField][\$eq]=$val');
     return this;
   }
 
-  // Add OR filter
-  StrapiQueryBuilder filterOr(String field, dynamic value) {
-    final orIndex = _filters.where((f) => f.contains('\$or')).length;
-    if (value is String) {
-      _filters.add(
-        'filters[\$or][$orIndex][$field][\$eq]=${Uri.encodeComponent(value)}',
-      );
-    } else {
-      _filters.add('filters[\$or][$orIndex][$field][\$eq]=$value');
-    }
-    return this;
-  }
-
-  // Add not equal filter
+  // Not equal filter
   StrapiQueryBuilder filterNot(String field, dynamic value) {
-    if (value is String) {
-      _filters.add('filters[$field][\$ne]=${Uri.encodeComponent(value)}');
-    } else {
-      _filters.add('filters[$field][\$ne]=$value');
-    }
+    final val = value is String ? Uri.encodeComponent(value) : value;
+    _filters.add('filters[$field][\$ne]=$val');
     return this;
   }
 
-  // Add contains filter
+  // Contains insensitive
   StrapiQueryBuilder filterContains(String field, String value) {
     _filters.add('filters[$field][\$containsi]=${Uri.encodeComponent(value)}');
     return this;
   }
 
-  // Add date range filter
+  // Date range filter
   StrapiQueryBuilder filterDateRange(
     String field,
     DateTime? from,
@@ -75,23 +43,38 @@ class StrapiQueryBuilder {
     return this;
   }
 
-  // Add sorting
-  StrapiQueryBuilder sortBy(String field, {bool desc = false}) {
-    _sorts.add('sort[0]=$field:${desc ? 'desc' : 'asc'}');
+  // OR: Contains insensitive
+  StrapiQueryBuilder orContains(String field, String value) {
+    final index = _orFilters.length;
+    _orFilters.add(
+      'filters[\$or][$index][$field][\$containsi]=${Uri.encodeComponent(value)}',
+    );
     return this;
   }
 
-  // Add multiple sorting
+  // OR: Equals
+  StrapiQueryBuilder orEq(String field, dynamic value) {
+    final index = _orFilters.length;
+    final val = value is String ? Uri.encodeComponent(value) : value;
+    _orFilters.add('filters[\$or][$index][$field][\$eq]=$val');
+    return this;
+  }
+
+  // Sorting
+  StrapiQueryBuilder sortBy(String field, {bool desc = false}) {
+    _sorts.add('sort[${_sorts.length}]=$field:${desc ? 'desc' : 'asc'}');
+    return this;
+  }
+
+  // Multiple sort
   StrapiQueryBuilder sortByMultiple(Map<String, bool> sorts) {
-    int index = _sorts.length;
     sorts.forEach((field, desc) {
-      _sorts.add('sort[$index]=$field:${desc ? 'desc' : 'asc'}');
-      index++;
+      _sorts.add('sort[${_sorts.length}]=$field:${desc ? 'desc' : 'asc'}');
     });
     return this;
   }
 
-  // Add field selection
+  // Select fields
   StrapiQueryBuilder select(List<String> fields) {
     for (int i = 0; i < fields.length; i++) {
       _selects.add('fields[$i]=${fields[i]}');
@@ -99,7 +82,7 @@ class StrapiQueryBuilder {
     return this;
   }
 
-  // Add populate field
+  // Populate single or multiple fields
   StrapiQueryBuilder populateField(String field, {List<String>? fields}) {
     if (fields != null && fields.isNotEmpty) {
       for (int i = 0; i < fields.length; i++) {
@@ -111,7 +94,7 @@ class StrapiQueryBuilder {
     return this;
   }
 
-  // Add nested populate
+  // Nested populate
   StrapiQueryBuilder populateNested(
     String field,
     String nestedField, {
@@ -129,48 +112,35 @@ class StrapiQueryBuilder {
     return this;
   }
 
-  // Add pagination
+  // Pagination
   StrapiQueryBuilder paginate(int page, int pageSize) {
     _page = page;
     _pageSize = pageSize;
     return this;
   }
 
-  // Build the final query string
+  // Build final query
   String build() {
     final List<String> queryParts = [];
-
-    // Add searches
-    queryParts.addAll(_searches);
-
-    // Add filters
     queryParts.addAll(_filters);
-
-    // Add sorts
+    queryParts.addAll(_orFilters);
     queryParts.addAll(_sorts);
-
-    // Add selects
     queryParts.addAll(_selects);
-
-    // Add populates
     queryParts.addAll(_populates);
-
-    // Add pagination
     if (_page != null && _pageSize != null) {
       queryParts.add('pagination[page]=$_page');
       queryParts.add('pagination[pageSize]=$_pageSize');
     }
-
     return queryParts.join('&');
   }
 
-  // Reset builder for reuse
+  // Reset builder
   void reset() {
     _filters.clear();
+    _orFilters.clear();
     _sorts.clear();
     _selects.clear();
     _populates.clear();
-    _searches.clear();
     _page = null;
     _pageSize = null;
   }

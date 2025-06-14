@@ -140,6 +140,7 @@ class CourseService {
   /// Search courses by title or description
   Future<ApiResponse<List<Course>>> searchCourses(
     String searchTerm, {
+    int? categoryId,
     int? page,
     int? pageSize,
     String? sortField,
@@ -151,6 +152,7 @@ class CourseService {
 
     return getCourses(
       searchTerm: searchTerm,
+      categoryId: categoryId,
       page: page,
       pageSize: pageSize,
       sortField: sortField,

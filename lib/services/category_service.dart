@@ -102,7 +102,7 @@ class CategoryService {
         if (i == 0) {
           queryBuilder.filter('id', ids[i]);
         } else {
-          queryBuilder.filterOr('id', ids[i]);
+          queryBuilder.orEq('id', ids[i]);
         }
       }
 

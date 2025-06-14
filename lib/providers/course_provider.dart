@@ -167,6 +167,7 @@ class CourseProvider extends ChangeNotifier {
     try {
       final response = await _courseService.searchCourses(
         searchTerm,
+        categoryId: categoryId,
         sortField: sortField,
         sortDesc: sortDesc,
         pageSize: 50, // More results for search

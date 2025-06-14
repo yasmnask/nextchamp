@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nextchamp/models/user_model.dart';
+import 'package:nextchamp/pages/explore_page.dart';
+import 'package:nextchamp/providers/app_state_provider.dart';
+import 'package:nextchamp/providers/bottom_navigation_provider.dart';
 import 'package:nextchamp/providers/user_provider.dart';
 import 'package:nextchamp/utils/string_utils.dart';
 import 'package:nextchamp/components/header_homepage.dart';
@@ -473,34 +476,45 @@ class _HomePageState extends State<HomePage> {
                 ? 'Loading...'
                 : categories[index].name;
 
-            return Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Color(0xFFF3EEEA),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Text(
-                  categoryName,
-                  style: TextStyle(
-                    color: Color(0xFF1F2937),
-                    fontSize: 12,
-                    fontFamily: 'Times New Roman',
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+            return GestureDetector(
+              onTap: () {
+                if (!isLoading && categories.isNotEmpty) {
+                  context.read<AppStateProvider>().setSelectedCategory(
+                    categories[index].id,
+                    categories[index].name,
+                  );
+                  context.read<BottomNavigationProvider>().setPage(1);
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Color(0xFFF3EEEA),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
-              ),
-            ).redacted(context: context, redact: isLoading);
+                child: Center(
+                  child: Text(
+                    categoryName,
+                    style: TextStyle(
+                      color: Color(0xFF1F2937),
+                      fontSize: 12,
+                      fontFamily: 'Times New Roman',
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ).redacted(context: context, redact: isLoading),
+            );
           },
         );
       },

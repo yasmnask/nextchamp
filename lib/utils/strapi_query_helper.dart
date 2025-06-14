@@ -17,9 +17,9 @@ class StrapiQueryHelper {
 
     // Add search if provided
     if (searchTerm != null && searchTerm.isNotEmpty) {
-      queryBuilder.search('title', searchTerm);
+      queryBuilder.orContains('title', searchTerm);
       // Also search in description for more comprehensive results
-      queryBuilder.orSearch('description', searchTerm);
+      queryBuilder.orContains('description', searchTerm);
     }
 
     // Add category filter
@@ -152,7 +152,7 @@ class StrapiQueryHelper {
 
     // Add search if provided
     if (searchTerm != null && searchTerm.isNotEmpty) {
-      queryBuilder.search('name', searchTerm);
+      queryBuilder.filterContains('name', searchTerm);
     }
 
     // Add sorting
