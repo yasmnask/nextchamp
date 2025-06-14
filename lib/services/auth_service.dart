@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:nextchamp/providers/user_provider.dart';
-import 'dio_client.dart';
+import '../core/dio_client.dart';
 import '../core/secure_storage.dart';
 import '../models/user_model.dart';
-import '../models/api_response.dart';
+import '../utils/api_response.dart';
 
 class AuthService {
   final _dio = DioClient().dio;

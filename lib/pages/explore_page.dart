@@ -232,12 +232,12 @@ class _ExplorePageState extends State<ExplorePage> {
           children: [
             Expanded(
               child: ListView.builder(
-                padding: EdgeInsets.only(top: 20),
+                padding: EdgeInsets.only(top: 20, bottom: 20),
                 physics: BouncingScrollPhysics(),
                 itemCount: courses.length,
                 itemBuilder: (context, index) {
                   return Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    margin: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: courses[index]['color'] as Color,
@@ -248,12 +248,6 @@ class _ExplorePageState extends State<ExplorePage> {
                           blurRadius: 25,
                           offset: Offset(0, 8),
                           spreadRadius: 4,
-                        ),
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.06),
-                          blurRadius: 6,
-                          offset: Offset(0, 10),
-                          spreadRadius: 8,
                         ),
                       ],
                     ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nextchamp/pages/wrapper_page.dart';
 import 'package:nextchamp/providers/user_provider.dart';
+import 'package:nextchamp/providers/category_provider.dart';
+import 'package:nextchamp/providers/course_provider.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -16,7 +18,11 @@ Future<void> main() async {
   });
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => UserProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => CategoryProvider()),
+        ChangeNotifierProvider(create: (_) => CourseProvider()),
+      ],
       child: const MyApp(),
     ),
   );

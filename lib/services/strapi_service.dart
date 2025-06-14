@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'dio_client.dart';
-import '../models/api_response.dart';
+import '../core/dio_client.dart';
+import '../utils/api_response.dart';
 
 class StrapiService {
   final _dio = DioClient().dio;
