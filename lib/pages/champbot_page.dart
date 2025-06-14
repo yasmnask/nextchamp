@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class ChatbotScreen extends StatefulWidget {
+class ChampbotPage extends StatefulWidget {
   @override
-  _ChatbotScreenState createState() => _ChatbotScreenState();
+  _ChampbotPageState createState() => _ChampbotPageState();
 }
 
-class _ChatbotScreenState extends State<ChatbotScreen> {
+class _ChampbotPageState extends State<ChampbotPage> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   // List untuk menyimpan pesan chat - sesuai dengan gambar
   List<ChatMessage> messages = [
     ChatMessage(
@@ -17,12 +17,14 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       timestamp: DateTime.now().subtract(Duration(minutes: 5)),
     ),
     ChatMessage(
-      text: "Ada nih, soalnya tiba agar kita bisa fokus setelah lomba dan perkembangan",
+      text:
+          "Ada nih, soalnya tiba agar kita bisa fokus setelah lomba dan perkembangan",
       isBot: false,
       timestamp: DateTime.now().subtract(Duration(minutes: 4)),
     ),
     ChatMessage(
-      text: "Buat jadwal yang terorganisir. Tentukan prioritas, atur deadline lomba atau tugas kuliah dulu, utamakan yang paling mendesak. Gunakan waktu dengan bijak, jangan sampai terlalu lama scrolling bagi waktu, bagi kesempatan juga. Komunikasi dengan tim dan dosen. Biar mereka tahu kalau kamu sedang bagi waktu, jaga kesehatan juga. Semangat ya Yasmin!",
+      text:
+          "Buat jadwal yang terorganisir. Tentukan prioritas, atur deadline lomba atau tugas kuliah dulu, utamakan yang paling mendesak. Gunakan waktu dengan bijak, jangan sampai terlalu lama scrolling bagi waktu, bagi kesempatan juga. Komunikasi dengan tim dan dosen. Biar mereka tahu kalau kamu sedang bagi waktu, jaga kesehatan juga. Semangat ya Yasmin!",
       isBot: true,
       timestamp: DateTime.now().subtract(Duration(minutes: 2)),
     ),
@@ -78,10 +80,13 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           children: [
             // PNG Gradient background di tengah layar - tanpa border
             Positioned(
-              top: MediaQuery.of(context).size.height * 0.15, // Posisi dari atas
+              top:
+                  MediaQuery.of(context).size.height * 0.15, // Posisi dari atas
               left: MediaQuery.of(context).size.width * 0.1, // Posisi dari kiri
-              right: MediaQuery.of(context).size.width * 0.1, // Posisi dari kanan
-              height: MediaQuery.of(context).size.height * 0.5, // Tinggi gradasi
+              right:
+                  MediaQuery.of(context).size.width * 0.1, // Posisi dari kanan
+              height:
+                  MediaQuery.of(context).size.height * 0.5, // Tinggi gradasi
               child: Image.asset(
                 'assets/gradasi_bg_bot.png',
                 fit: BoxFit.contain, // Maintain aspect ratio
@@ -102,7 +107,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 },
               ),
             ),
-            
+
             // Main chat content
             Column(
               children: [
@@ -117,12 +122,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                     },
                   ),
                 ),
-                
+
                 // Input area
                 _buildInputArea(),
-                
-                // Bottom Navigation
-                _buildBottomNavigation(),
               ],
             ),
           ],
@@ -133,10 +135,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
   Widget _buildChatBubble(ChatMessage message) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 20), // Increased spacing between messages
+      padding: EdgeInsets.only(
+        bottom: 20,
+      ), // Increased spacing between messages
       child: Row(
-        mainAxisAlignment: message.isBot 
-            ? MainAxisAlignment.start 
+        mainAxisAlignment: message.isBot
+            ? MainAxisAlignment.start
             : MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -174,18 +178,24 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               ),
             ),
           ],
-          
+
           // Message bubble
           Flexible(
             child: Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7, // Slightly narrower
+                maxWidth:
+                    MediaQuery.of(context).size.width *
+                    0.7, // Slightly narrower
               ),
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: message.isBot 
-                    ? Colors.white.withOpacity(0.9) // Semi-transparent white for bot
-                    : Color(0xFFE5E7EB).withOpacity(0.9), // Light gray for user messages
+                color: message.isBot
+                    ? Colors.white.withOpacity(
+                        0.9,
+                      ) // Semi-transparent white for bot
+                    : Color(
+                        0xFFE5E7EB,
+                      ).withOpacity(0.9), // Light gray for user messages
                 borderRadius: BorderRadius.circular(18), // More rounded
                 boxShadow: [
                   BoxShadow(
@@ -206,7 +216,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               ),
             ),
           ),
-          
+
           if (!message.isBot) ...[
             // User avatar - positioned at bottom right
             Container(
@@ -304,78 +314,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                     ),
                   ],
                 ),
-                child: Icon(
-                  Icons.send,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigation() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Color(0xFF475569), // slate-600
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.people_outline, 'Community', 0),
-              _buildNavItem(Icons.public, 'Explore', 1),
-              _buildNavItem(Icons.home, 'Home', 2),
-              _buildNavItem(Icons.smart_toy, 'Champ Bot', 3, isActive: true),
-              _buildNavItem(Icons.school_outlined, 'Mentor', 4),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, int index, {bool isActive = false}) {
-    return GestureDetector(
-      onTap: () {
-        if (index == 2) {
-          // Navigate back to home
-          Navigator.pop(context);
-        }
-        // Add other navigation logic here
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isActive ? Color(0xFF334155) : Colors.transparent, // slate-700
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isActive ? Colors.white : Color(0xFF94A3B8), // slate-400
-              size: 24,
-            ),
-            SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: isActive ? Colors.white : Color(0xFF94A3B8),
-                fontSize: 12,
+                child: Icon(Icons.send, color: Colors.white, size: 20),
               ),
             ),
           ],
@@ -389,19 +328,21 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     if (messageText.isNotEmpty) {
       setState(() {
         // Add user message
-        messages.add(ChatMessage(
-          text: messageText,
-          isBot: false,
-          timestamp: DateTime.now(),
-        ));
-        
+        messages.add(
+          ChatMessage(
+            text: messageText,
+            isBot: false,
+            timestamp: DateTime.now(),
+          ),
+        );
+
         // Clear input
         _messageController.clear();
       });
-      
+
       // Scroll to bottom
       _scrollToBottom();
-      
+
       // Simulate bot response (nanti diganti dengan API Gemini)
       _simulateBotResponse();
     }
@@ -411,11 +352,14 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     // Simulate typing delay
     Future.delayed(Duration(seconds: 1), () {
       setState(() {
-        messages.add(ChatMessage(
-          text: "Terima kasih atas pertanyaannya! Saya akan membantu Anda. (Ini response sementara, nanti akan diganti dengan API Gemini)",
-          isBot: true,
-          timestamp: DateTime.now(),
-        ));
+        messages.add(
+          ChatMessage(
+            text:
+                "Terima kasih atas pertanyaannya! Saya akan membantu Anda. (Ini response sementara, nanti akan diganti dengan API Gemini)",
+            isBot: true,
+            timestamp: DateTime.now(),
+          ),
+        );
       });
       _scrollToBottom();
     });

@@ -1,9 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:nextchamp/pages/login.dart';
-import 'package:nextchamp/pages/register.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:nextchamp/pages/wrapper_page.dart';
+import 'package:nextchamp/providers/app_state_provider.dart';
+import 'package:nextchamp/providers/bottom_navigation_provider.dart';
+import 'package:nextchamp/providers/user_provider.dart';
+import 'package:nextchamp/providers/category_provider.dart';
+import 'package:nextchamp/providers/course_provider.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    print('FlutterError: ${details.exceptionAsString()}');
+  };
+
+  await dotenv.load(fileName: ".env").catchError((e) {
+    print('Env file not found, using defaults');
+  });
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => BottomNavigationProvider()),
+        ChangeNotifierProvider(create: (_) => AppStateProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => CategoryProvider()),
+        ChangeNotifierProvider(create: (_) => CourseProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,11 +40,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'NextChamp',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         fontFamily: 'Roboto',
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF1E293B)),
       ),
-      // PERBAIKI: Ubah dari register() menjadi RegisterPage()
-      home: const RegisterPage(),
+      home: const WrapperPage(),
       debugShowCheckedModeBanner: false,
     );
   }
