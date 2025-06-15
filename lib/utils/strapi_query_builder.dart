@@ -9,9 +9,10 @@ class StrapiQueryBuilder {
 
   // Basic equals filter
   StrapiQueryBuilder filter(String field, dynamic value) {
-    final val = value is String ? Uri.encodeComponent(value) : value;
-    final encodedField = field.replaceAll('.', ']['); // ganti dot jadi bracket
-    _filters.add('filters[$encodedField][\$eq]=$val');
+    final stringValue = value.toString();
+    final encodedValue = Uri.encodeComponent(stringValue);
+    final encodedField = field.replaceAll('.', '][');
+    _filters.add('filters[$encodedField][\$eq]=$encodedValue');
     return this;
   }
 

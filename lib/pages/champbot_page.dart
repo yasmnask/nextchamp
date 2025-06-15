@@ -1,4 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:nextchamp/services/chat_session_manager.dart';
+import 'package:provider/provider.dart';
+import '../models/chat_model.dart';
+import '../services/chat_service.dart';
+import '../services/gemini_service.dart';
+import '../providers/user_provider.dart';
 
 class ChampbotPage extends StatefulWidget {
   @override
@@ -8,32 +15,94 @@ class ChampbotPage extends StatefulWidget {
 class _ChampbotPageState extends State<ChampbotPage> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  late ChatService _chatService;
+  late GeminiService _geminiService;
+  late final ChatSessionManager _sessionManager;
 
-  // List untuk menyimpan pesan chat - sesuai dengan gambar
-  List<ChatMessage> messages = [
-    ChatMessage(
-      text: "Hai Yasmin! Ada yang mau ditanyakan?",
-      isBot: true,
-      timestamp: DateTime.now().subtract(Duration(minutes: 5)),
-    ),
-    ChatMessage(
-      text:
-          "Ada nih, soalnya tiba agar kita bisa fokus setelah lomba dan perkembangan",
-      isBot: false,
-      timestamp: DateTime.now().subtract(Duration(minutes: 4)),
-    ),
-    ChatMessage(
-      text:
-          "Buat jadwal yang terorganisir. Tentukan prioritas, atur deadline lomba atau tugas kuliah dulu, utamakan yang paling mendesak. Gunakan waktu dengan bijak, jangan sampai terlalu lama scrolling bagi waktu, bagi kesempatan juga. Komunikasi dengan tim dan dosen. Biar mereka tahu kalau kamu sedang bagi waktu, jaga kesehatan juga. Semangat ya Yasmin!",
-      isBot: true,
-      timestamp: DateTime.now().subtract(Duration(minutes: 2)),
-    ),
-    ChatMessage(
-      text: "Okey! terima kasih sudah membantu!",
-      isBot: false,
-      timestamp: DateTime.now().subtract(Duration(minutes: 1)),
-    ),
-  ];
+  String? _currentSessionId;
+  List<ChatMessage> messages = [];
+  bool _isLoading = false;
+  bool _isBotTyping = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _chatService = ChatService();
+    _geminiService = GeminiService();
+    _sessionManager = ChatSessionManager(_chatService);
+    _initializeChat();
+  }
+
+  Future<void> _initializeChat() async {
+    if (!mounted) return;
+
+    try {
+      setState(() => _isLoading = true);
+
+      // FIXED: Proper context usage
+      final userId = context.read<UserProvider>().user?.id?.toString();
+
+      _currentSessionId = await _sessionManager.getOrCreateSession(userId);
+
+      if (_currentSessionId != null) {
+        final history = await _chatService.getMessages(_currentSessionId!);
+
+        if (mounted) {
+          setState(() {
+            messages = history;
+            _isLoading = false;
+          });
+
+          if (history.isEmpty) {
+            await _sendWelcomeMessage();
+          }
+          _scrollToBottom();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading chat: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
+  Future<void> _sendWelcomeMessage() async {
+    if (!mounted || _currentSessionId == null) return;
+
+    try {
+      final userProvider = context.read<UserProvider>();
+      final userName = userProvider.user?.username ?? 'there';
+
+      final welcomeMessage = ChatMessage(
+        id: 'welcome-${DateTime.now().millisecondsSinceEpoch}',
+        content:
+            "Hai $userName! Ada yang bisa saya bantu terkait kursus atau pembelajaran?",
+        isFromBot: true,
+        timestamp: DateTime.now(),
+        sessionId: _currentSessionId!,
+      );
+
+      if (mounted) {
+        setState(() {
+          messages.add(welcomeMessage);
+        });
+      }
+
+      // Save to backend
+      await _chatService.saveMessage(
+        sessionId: _currentSessionId!,
+        content: welcomeMessage.content,
+        isFromBot: true,
+      );
+
+      _scrollToBottom();
+    } catch (e) {
+      print('Error sending welcome message: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +116,7 @@ class _ChampbotPageState extends State<ChampbotPage> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        backgroundColor: Color(0xFF475569), // slate-600 to match design
+        backgroundColor: const Color(0xFF2C3E50),
         elevation: 0,
         actions: [
           Padding(
@@ -74,78 +143,160 @@ class _ChampbotPageState extends State<ChampbotPage> {
           ),
         ],
       ),
-      body: Container(
-        color: Colors.white, // Background utama putih polos
-        child: Stack(
-          children: [
-            // PNG Gradient background di tengah layar - tanpa border
-            Positioned(
-              top:
-                  MediaQuery.of(context).size.height * 0.15, // Posisi dari atas
-              left: MediaQuery.of(context).size.width * 0.1, // Posisi dari kiri
-              right:
-                  MediaQuery.of(context).size.width * 0.1, // Posisi dari kanan
-              height:
-                  MediaQuery.of(context).size.height * 0.5, // Tinggi gradasi
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Container(
+              color: Colors.white,
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: MediaQuery.of(context).size.height * 0.15,
+                    left: MediaQuery.of(context).size.width * 0.1,
+                    right: MediaQuery.of(context).size.width * 0.1,
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: Image.asset(
+                      'assets/gradasi_bg_bot.png',
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Color(0xFFFFFBF0), Color(0xFFF0F9FF)],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                          itemCount: messages.length + (_isBotTyping ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (_isBotTyping && index == messages.length) {
+                              return _buildTypingIndicator();
+                            }
+                            return _buildChatBubble(messages[index]);
+                          },
+                        ),
+                      ),
+                      _buildInputArea(),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  Widget _buildTypingIndicator() {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            margin: EdgeInsets.only(right: 8, bottom: 4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+            ),
+            child: ClipOval(
               child: Image.asset(
-                'assets/gradasi_bg_bot.png',
-                fit: BoxFit.contain, // Maintain aspect ratio
+                'assets/kepala_bot.png',
+                width: 32,
+                height: 32,
+                fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  // Fallback gradient tanpa border
                   return Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          Color(0xFFFFFBF0), // Very light cream/yellow
-                          Color(0xFFF0F9FF), // Very light blue
-                        ],
-                      ),
+                      color: Color(0xFF374151),
+                      shape: BoxShape.circle,
                     ),
+                    child: Icon(Icons.smart_toy, color: Colors.white, size: 18),
                   );
                 },
               ),
             ),
-
-            // Main chat content
-            Column(
-              children: [
-                // Chat messages area
-                Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      return _buildChatBubble(messages[index]);
-                    },
-                  ),
+          ),
+          Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.7,
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.9),
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 6,
+                  offset: Offset(0, 2),
                 ),
-
-                // Input area
-                _buildInputArea(),
               ],
             ),
-          ],
-        ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  margin: EdgeInsets.symmetric(horizontal: 2),
+                  decoration: BoxDecoration(
+                    color: Color(0xFF374151),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Container(
+                  width: 8,
+                  height: 8,
+                  margin: EdgeInsets.symmetric(horizontal: 2),
+                  decoration: BoxDecoration(
+                    color: Color(0xFF374151),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Container(
+                  width: 8,
+                  height: 8,
+                  margin: EdgeInsets.symmetric(horizontal: 2),
+                  decoration: BoxDecoration(
+                    color: Color(0xFF374151),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildChatBubble(ChatMessage message) {
+    final userProvider = context.read<UserProvider>();
+    final userInitial = userProvider.user?.username?.isNotEmpty == true
+        ? userProvider.user!.username[0].toUpperCase()
+        : 'Y';
+
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: 20,
-      ), // Increased spacing between messages
+      padding: EdgeInsets.only(bottom: 20),
       child: Row(
-        mainAxisAlignment: message.isBot
+        mainAxisAlignment: message.isFromBot
             ? MainAxisAlignment.start
             : MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (message.isBot) ...[
-            // Bot avatar - menggunakan kepala_bot.png
+          if (message.isFromBot) ...[
             Container(
               width: 32,
               height: 32,
@@ -161,10 +312,9 @@ class _ChampbotPageState extends State<ChampbotPage> {
                   height: 32,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    // Fallback jika gambar gagal dimuat
                     return Container(
                       decoration: BoxDecoration(
-                        color: Color(0xFF374151), // Dark gray for bot avatar
+                        color: Color(0xFF374151),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -178,25 +328,17 @@ class _ChampbotPageState extends State<ChampbotPage> {
               ),
             ),
           ],
-
-          // Message bubble
           Flexible(
             child: Container(
               constraints: BoxConstraints(
-                maxWidth:
-                    MediaQuery.of(context).size.width *
-                    0.7, // Slightly narrower
+                maxWidth: MediaQuery.of(context).size.width * 0.7,
               ),
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: message.isBot
-                    ? Colors.white.withOpacity(
-                        0.9,
-                      ) // Semi-transparent white for bot
-                    : Color(
-                        0xFFE5E7EB,
-                      ).withOpacity(0.9), // Light gray for user messages
-                borderRadius: BorderRadius.circular(18), // More rounded
+                color: message.isFromBot
+                    ? Colors.white.withOpacity(0.9)
+                    : Color(0xFFE5E7EB).withOpacity(0.9),
+                borderRadius: BorderRadius.circular(18),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.08),
@@ -206,9 +348,9 @@ class _ChampbotPageState extends State<ChampbotPage> {
                 ],
               ),
               child: Text(
-                message.text,
+                message.content,
                 style: TextStyle(
-                  color: Color(0xFF374151), // Dark gray text for both
+                  color: Color(0xFF374151),
                   fontSize: 12,
                   height: 1.4,
                   fontWeight: FontWeight.w400,
@@ -216,12 +358,10 @@ class _ChampbotPageState extends State<ChampbotPage> {
               ),
             ),
           ),
-
-          if (!message.isBot) ...[
-            // User avatar - positioned at bottom right
+          if (!message.isFromBot) ...[
             Container(
-              width: 32,
-              height: 32,
+              width: 36,
+              height: 36,
               margin: EdgeInsets.only(left: 8, bottom: 4),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -229,12 +369,12 @@ class _ChampbotPageState extends State<ChampbotPage> {
               ),
               child: ClipOval(
                 child: Container(
-                  color: Color(0xFFFED7AA), // orange-200 background
+                  color: Color(0xFFFED7AA),
                   child: Center(
                     child: Text(
-                      'Y',
+                      userInitial,
                       style: TextStyle(
-                        color: Color(0xFF9A3412), // orange-800
+                        color: Color(0xFF9A3412),
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -269,28 +409,22 @@ class _ChampbotPageState extends State<ChampbotPage> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Color(0xFFF3F4F6), // Light gray background
+                  color: Color(0xFFF3F4F6),
                   borderRadius: BorderRadius.circular(25),
-                  border: Border.all(
-                    color: Color(0xFFE5E7EB), // Light border
-                    width: 1,
-                  ),
+                  border: Border.all(color: Color(0xFFE5E7EB), width: 1),
                 ),
                 child: TextField(
                   controller: _messageController,
                   decoration: InputDecoration(
-                    hintText: 'Ketik Pesan untuk Chatbot',
+                    hintText: 'Ketik pesan untuk ChampBot..',
                     hintStyle: TextStyle(
-                      color: Color(0xFF9CA3AF), // Gray-400
+                      color: Color(0xFF9CA3AF),
                       fontSize: 14,
                     ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(vertical: 12),
                   ),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF374151), // Gray-700
-                  ),
+                  style: TextStyle(fontSize: 14, color: Color(0xFF374151)),
                   maxLines: null,
                   textInputAction: TextInputAction.send,
                   onSubmitted: (value) => _sendMessage(),
@@ -304,7 +438,7 @@ class _ChampbotPageState extends State<ChampbotPage> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: Color(0xFF475569), // Blue-500
+                  color: Color(0xFF475569),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
@@ -323,51 +457,102 @@ class _ChampbotPageState extends State<ChampbotPage> {
     );
   }
 
-  void _sendMessage() {
-    String messageText = _messageController.text.trim();
-    if (messageText.isNotEmpty) {
-      setState(() {
-        // Add user message
-        messages.add(
-          ChatMessage(
-            text: messageText,
-            isBot: false,
-            timestamp: DateTime.now(),
-          ),
-        );
+  Future<void> _sendMessage() async {
+    final messageText = _messageController.text.trim();
+    if (messageText.isEmpty || _isBotTyping || _currentSessionId == null)
+      return;
 
-        // Clear input
-        _messageController.clear();
-      });
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-      // Scroll to bottom
+    try {
+      _messageController.clear();
+      final userMessage = ChatMessage(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        content: messageText,
+        isFromBot: false,
+        timestamp: DateTime.now(),
+        sessionId: _currentSessionId!,
+      );
+
+      if (mounted) {
+        setState(() {
+          messages.add(userMessage);
+          _isBotTyping = true;
+        });
+      }
+
       _scrollToBottom();
 
-      // Simulate bot response (nanti diganti dengan API Gemini)
-      _simulateBotResponse();
+      try {
+        await _chatService.saveMessage(
+          sessionId: _currentSessionId!,
+          content: messageText,
+          isFromBot: false,
+        );
+      } catch (saveError) {
+        print('❌ Error saving user message: $saveError');
+      }
+
+      String botResponse;
+      try {
+        botResponse = await _geminiService.generateResponse(
+          prompt: messageText,
+          context: context,
+          history: messages,
+        );
+      } catch (geminiError) {
+        print('❌ Error getting bot response: $geminiError');
+        botResponse =
+            'Maaf, saya mengalami kesulitan memproses permintaan Anda. Silakan coba lagi.';
+      }
+
+      // Add bot message to UI
+      final botMessage = ChatMessage(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        content: botResponse,
+        isFromBot: true,
+        timestamp: DateTime.now(),
+        sessionId: _currentSessionId!,
+      );
+
+      if (mounted) {
+        setState(() {
+          messages.add(botMessage);
+          _isBotTyping = false;
+        });
+      }
+
+      try {
+        await _chatService.saveMessage(
+          sessionId: _currentSessionId!,
+          content: botResponse,
+          isFromBot: true,
+        );
+      } catch (saveBotError) {
+        print('❌ Error saving bot response: $saveBotError');
+        // Don't show error to user since message is already displayed
+      }
+
+      _scrollToBottom();
+    } catch (e) {
+      print('❌ General error in _sendMessage: $e');
+      if (mounted) {
+        setState(() => _isBotTyping = false);
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text('Terjadi kesalahan. Silakan coba lagi.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
-  void _simulateBotResponse() {
-    // Simulate typing delay
-    Future.delayed(Duration(seconds: 1), () {
-      setState(() {
-        messages.add(
-          ChatMessage(
-            text:
-                "Terima kasih atas pertanyaannya! Saya akan membantu Anda. (Ini response sementara, nanti akan diganti dengan API Gemini)",
-            isBot: true,
-            timestamp: DateTime.now(),
-          ),
-        );
-      });
-      _scrollToBottom();
-    });
-  }
-
   void _scrollToBottom() {
+    if (!mounted) return;
+
     Future.delayed(Duration(milliseconds: 100), () {
-      if (_scrollController.hasClients) {
+      if (mounted && _scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
           duration: Duration(milliseconds: 300),
@@ -383,17 +568,4 @@ class _ChampbotPageState extends State<ChampbotPage> {
     _scrollController.dispose();
     super.dispose();
   }
-}
-
-// Model untuk chat message
-class ChatMessage {
-  final String text;
-  final bool isBot;
-  final DateTime timestamp;
-
-  ChatMessage({
-    required this.text,
-    required this.isBot,
-    required this.timestamp,
-  });
 }

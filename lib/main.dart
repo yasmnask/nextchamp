@@ -6,6 +6,8 @@ import 'package:nextchamp/providers/bottom_navigation_provider.dart';
 import 'package:nextchamp/providers/user_provider.dart';
 import 'package:nextchamp/providers/category_provider.dart';
 import 'package:nextchamp/providers/course_provider.dart';
+import 'package:nextchamp/services/chat_service.dart';
+import 'package:nextchamp/services/gemini_service.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -26,6 +28,8 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => CourseProvider()),
+        Provider(create: (_) => GeminiService()),
+        Provider(create: (_) => ChatService()),
       ],
       child: const MyApp(),
     ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nextchamp/providers/bottom_navigation_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
-import 'champbot_page.dart'; // Import the new chatbot screen
+import 'champbot_page.dart'; // Import the new chatbot screen - assuming this path is correct
 
 class LoadChatbotPage extends StatefulWidget {
   @override
@@ -11,52 +11,66 @@ class LoadChatbotPage extends StatefulWidget {
 
 class _LoadChatbotPageState extends State<LoadChatbotPage>
     with TickerProviderStateMixin {
-  late AnimationController _robotAnimationController;
-  late AnimationController _loadingAnimationController;
-  late Animation<double> _robotAnimation;
-  late Animation<double> _loadingAnimation;
+  // Animation controller for the robot's entrance
+  late AnimationController _robotEntranceController;
+  // Animation for the robot's scale effect
+  late Animation<double> _robotScaleAnimation;
+
+  // Animation controller for the loading dots
+  late AnimationController _loadingDotsController;
+  // Animation for the loading dots' pulsating effect
+  late Animation<double> _loadingDotsAnimation;
 
   @override
   void initState() {
     super.initState();
 
-    // Robot animation controller
-    _robotAnimationController = AnimationController(
-      duration: Duration(seconds: 2),
+    // Initialize robot entrance animation controller
+    _robotEntranceController = AnimationController(
+      duration: const Duration(seconds: 1), // Shorter, snappier entrance
       vsync: this,
     );
 
-    // Loading dots animation controller
-    _loadingAnimationController = AnimationController(
-      duration: Duration(milliseconds: 1500),
-      vsync: this,
-    );
-
-    _robotAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+    // Define the robot scale animation with a bouncy curve
+    _robotScaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _robotAnimationController,
-        curve: Curves.elasticOut,
+        parent: _robotEntranceController,
+        curve: Curves.elasticOut, // More pronounced elastic effect
       ),
     );
 
-    _loadingAnimation = Tween<double>(
+    // Initialize loading dots animation controller
+    _loadingDotsController = AnimationController(
+      duration: const Duration(milliseconds: 1000), // Faster, continuous pulse
+      vsync: this,
+    );
+
+    // Define the loading dots animation for a fade/scale effect
+    _loadingDotsAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(_loadingAnimationController);
+    ).animate(_loadingDotsController);
 
     // Start animations
-    _robotAnimationController.forward();
-    _loadingAnimationController.repeat();
+    _robotEntranceController.forward(); // Start robot entrance animation
+    _loadingDotsController.repeat(
+      reverse: true,
+    ); // Repeat dots animation with reverse for pulsating effect
 
-    Timer(Duration(seconds: 2), () {
-      context.read<BottomNavigationProvider>().setPage(3);
+    // Timer to navigate to the chatbot page after a delay
+    Timer(const Duration(seconds: 2), () {
+      // Ensure the widget is still mounted before attempting navigation
+      if (mounted) {
+        context.read<BottomNavigationProvider>().setPage(3);
+      }
     });
   }
 
   @override
   void dispose() {
-    _robotAnimationController.dispose();
-    _loadingAnimationController.dispose();
+    // Dispose of animation controllers to prevent memory leaks
+    _robotEntranceController.dispose();
+    _loadingDotsController.dispose();
     super.dispose();
   }
 
@@ -64,7 +78,7 @@ class _LoadChatbotPageState extends State<LoadChatbotPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Champ Bot',
           style: TextStyle(
             color: Colors.white,
@@ -72,22 +86,23 @@ class _LoadChatbotPageState extends State<LoadChatbotPage>
             fontWeight: FontWeight.w500,
           ),
         ),
-        backgroundColor: Color(0xFF2C3E50),
-        elevation: 0,
+        backgroundColor: const Color(0xFF2C3E50), // Dark blue-grey
+        elevation: 0, // No shadow for a flat design
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 16.0),
             child: CircleAvatar(
               backgroundColor: Colors.white,
               radius: 18,
               child: ClipOval(
                 child: Image.asset(
-                  'assets/kepala_bot.png',
+                  'assets/kepala_bot.png', // Image for the app bar avatar
                   width: 32,
                   height: 32,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    return Icon(
+                    // Fallback icon if image fails to load
+                    return const Icon(
                       Icons.smart_toy,
                       color: Color(0xFF2C3E50),
                       size: 20,
@@ -106,8 +121,10 @@ class _LoadChatbotPageState extends State<LoadChatbotPage>
             end: Alignment.bottomCenter,
             colors: [
               Colors.white,
-              Color(0xFFF8F9FA),
-              Color(0xFFE3F2FD).withOpacity(0.3),
+              const Color(0xFFF8F9FA), // Light grey
+              const Color(
+                0xFFE3F2FD,
+              ).withOpacity(0.5), // Lighter blue with more opacity
             ],
           ),
         ),
@@ -115,96 +132,131 @@ class _LoadChatbotPageState extends State<LoadChatbotPage>
           children: [
             Expanded(
               child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Animated Robot - using placeholder for now
-                    AnimatedBuilder(
-                      animation: _robotAnimation,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: _robotAnimation.value,
-                          child: Container(
-                            width: 200,
-                            height: 200,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFFFFF8E1).withOpacity(0.5),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.blue.withOpacity(0.2),
-                                  blurRadius: 20,
-                                  spreadRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Image.asset(
-                                'assets/bot_icon.png',
-                                width: 150,
-                                height: 150,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  print('Error loading bot_icon.png: $error');
-                                  return _buildRobotPlaceholder();
-                                },
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-
-                    SizedBox(height: 30),
-
-                    // Loading text
-                    Text(
-                      'Initializing Champ Bot...',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF2C3E50),
-                      ),
-                    ),
-
-                    SizedBox(height: 10),
-
-                    Text(
-                      'Your assistant to Win like a Champ!',
-                      style: TextStyle(fontSize: 14, color: Color(0xFF7F8C8D)),
-                    ),
-
-                    SizedBox(height: 30),
-
-                    // Loading dots animation
-                    AnimatedBuilder(
-                      animation: _loadingAnimation,
-                      builder: (context, child) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(3, (index) {
-                            double delay = index * 0.3;
-                            double animationValue =
-                                (_loadingAnimation.value - delay).clamp(
-                                  0.0,
-                                  1.0,
-                                );
-                            return Container(
-                              margin: EdgeInsets.symmetric(horizontal: 4),
-                              width: 12,
-                              height: 12,
+                child: SingleChildScrollView(
+                  // Added for better handling of small screens
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 40.0,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Animated Robot - using placeholder if image fails
+                      AnimatedBuilder(
+                        animation: _robotScaleAnimation,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: _robotScaleAnimation
+                                .value, // Apply scaling animation
+                            child: Container(
+                              width: 220, // Slightly larger container
+                              height: 220, // Slightly larger container
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Color(
-                                  0xFF3498DB,
-                                ).withOpacity(0.3 + (0.7 * animationValue)),
+                                color: const Color(
+                                  0xFFFFF8E1,
+                                ).withOpacity(0.6), // Softer background color
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.blue.withOpacity(
+                                      0.3,
+                                    ), // More pronounced blue shadow
+                                    blurRadius: 30, // Increased blur
+                                    spreadRadius: 8, // Increased spread
+                                  ),
+                                ],
                               ),
-                            );
-                          }),
-                        );
-                      },
-                    ),
-                  ],
+                              child: Center(
+                                child: Image.asset(
+                                  'assets/bot_icon.png', // Main robot icon
+                                  width: 160, // Slightly larger image
+                                  height: 160, // Slightly larger image
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    debugPrint(
+                                      'Error loading bot_icon.png: $error',
+                                    );
+                                    return _buildRobotPlaceholder(); // Fallback placeholder
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 40), // Increased spacing
+                      // Loading title text
+                      const Text(
+                        'Initializing Champ Bot...',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 22, // Larger font size for prominence
+                          fontWeight: FontWeight.w700, // Bolder font weight
+                          color: Color(0xFF2C3E50), // Dark blue-grey
+                          letterSpacing: 0.5, // Subtle letter spacing
+                        ),
+                      ),
+
+                      const SizedBox(height: 15), // Increased spacing
+                      // Subtitle text
+                      const Text(
+                        'Your intelligent assistant to Win like a Champ!', // Slightly rephrased
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16, // Slightly larger
+                          color: Color(0xFF7F8C8D), // Grey
+                          fontStyle:
+                              FontStyle.italic, // Italic for a softer feel
+                        ),
+                      ),
+
+                      const SizedBox(height: 40), // Increased spacing
+                      // Loading dots animation
+                      AnimatedBuilder(
+                        animation: _loadingDotsAnimation,
+                        builder: (context, child) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(3, (index) {
+                              // Calculate animation value for each dot, creating a wave effect
+                              final double dotAnimationValue =
+                                  (_loadingDotsAnimation.value +
+                                      (index * 0.2) // Stagger the animation
+                                      ) %
+                                  1.0; // Ensure value loops from 0 to 1
+
+                              // Determine dot scale and opacity based on animation value
+                              final double scale =
+                                  0.8 +
+                                  (0.4 * dotAnimationValue); // Pulsating scale
+                              final double opacity =
+                                  0.4 +
+                                  (0.6 *
+                                      dotAnimationValue); // Pulsating opacity
+
+                              return Transform.scale(
+                                scale: scale,
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                  ), // More space between dots
+                                  width: 14, // Slightly larger dot size
+                                  height: 14,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: const Color(0xFF3498DB).withOpacity(
+                                      opacity,
+                                    ), // Blue with animated opacity
+                                  ),
+                                ),
+                              );
+                            }),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -214,86 +266,103 @@ class _LoadChatbotPageState extends State<LoadChatbotPage>
     );
   }
 
+  // Placeholder widget for the robot if image asset fails to load
   Widget _buildRobotPlaceholder() {
     return Container(
-      width: 150,
-      height: 150,
+      width: 160, // Match image size for consistent container
+      height: 160,
       child: Stack(
+        alignment: Alignment.center, // Center the placeholder elements
         children: [
-          // Box
+          // Robot body (simulated as a rounded rectangle)
           Positioned(
-            bottom: 20,
-            left: 25,
-            right: 25,
-            height: 80,
+            bottom: 30, // Adjusted position
             child: Container(
+              width: 100,
+              height: 90, // Taller body
               decoration: BoxDecoration(
-                color: Colors.brown.shade400,
-                borderRadius: BorderRadius.circular(8),
+                color: Colors.grey.shade700, // Darker grey for body
+                borderRadius: BorderRadius.circular(12), // More rounded corners
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.brown.shade600,
-                    offset: Offset(0, 4),
-                    blurRadius: 8,
+                    color: Colors.black.withOpacity(0.3),
+                    offset: const Offset(0, 6),
+                    blurRadius: 10,
                   ),
                 ],
               ),
             ),
           ),
-          // Robot head
+          // Robot head (simulated as a circle)
           Positioned(
-            top: 20,
-            left: 35,
-            right: 35,
+            top: 25, // Adjusted position
             child: Container(
-              width: 80,
-              height: 80,
+              width: 90,
+              height: 90,
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(color: Color(0xFF3498DB), width: 3),
+                border: Border.all(
+                  color: const Color(0xFF3498DB),
+                  width: 4,
+                ), // Thicker border
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
+                    color: Colors.blue.withOpacity(0.4),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
               child: Center(
+                // Robot 'eye' or 'screen'
                 child: Container(
-                  width: 35,
-                  height: 15,
+                  width: 45,
+                  height: 20,
                   decoration: BoxDecoration(
                     color: Colors.black,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10), // More rounded
                   ),
                 ),
               ),
             ),
           ),
-          // Robot arms
+          // Robot arms (simulated as rounded rectangles)
           Positioned(
-            top: 70,
-            left: 15,
+            top: 75, // Aligned with body
+            left: 20, // Further out
             child: Container(
-              width: 15,
-              height: 35,
+              width: 20,
+              height: 45, // Longer arms
               decoration: BoxDecoration(
-                color: Color(0xFF3498DB),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xFF3498DB), // Blue arms
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.3),
+                    offset: const Offset(2, 2),
+                    blurRadius: 5,
+                  ),
+                ],
               ),
             ),
           ),
           Positioned(
-            top: 70,
-            right: 15,
+            top: 75,
+            right: 20,
             child: Container(
-              width: 15,
-              height: 35,
+              width: 20,
+              height: 45,
               decoration: BoxDecoration(
-                color: Color(0xFF3498DB),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xFF3498DB),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.3),
+                    offset: const Offset(-2, 2),
+                    blurRadius: 5,
+                  ),
+                ],
               ),
             ),
           ),
