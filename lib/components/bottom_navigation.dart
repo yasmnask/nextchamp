@@ -3,6 +3,7 @@ import 'package:nextchamp/pages/champbot_page.dart';
 import 'package:nextchamp/pages/explore_page.dart';
 import 'package:nextchamp/pages/home_page.dart';
 import 'package:nextchamp/pages/load_chatbot_page.dart';
+import 'package:nextchamp/pages/mentor_page.dart';
 import 'package:nextchamp/providers/bottom_navigation_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +20,7 @@ class _BottomNavigation extends State<BottomNavigation> {
     ExplorePage(),
     HomePage(),
     LoadChatbotPage(),
-    Center(child: Text('Mentor Page')),
+    MentorPage(),
   ];
 
   void _onItemTapped(BuildContext context, int index) {
