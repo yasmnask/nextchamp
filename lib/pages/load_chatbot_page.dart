@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:nextchamp/providers/bottom_navigation_provider.dart';
 import 'package:provider/provider.dart';
-import 'dart:async';
-import 'champbot_page.dart'; // Import the new chatbot screen
 
 class LoadChatbotPage extends StatefulWidget {
   @override
@@ -15,29 +14,31 @@ class _LoadChatbotPageState extends State<LoadChatbotPage>
   late AnimationController _loadingAnimationController;
   late Animation<double> _robotAnimation;
   late Animation<double> _loadingAnimation;
+  Timer? _navigationTimer; // Make timer nullable and trackable
 
   @override
   void initState() {
     super.initState();
-
+    
     // Robot animation controller
     _robotAnimationController = AnimationController(
       duration: Duration(seconds: 2),
       vsync: this,
     );
-
+    
     // Loading dots animation controller
     _loadingAnimationController = AnimationController(
       duration: Duration(milliseconds: 1500),
       vsync: this,
     );
 
-    _robotAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _robotAnimationController,
-        curve: Curves.elasticOut,
-      ),
-    );
+    _robotAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _robotAnimationController,
+      curve: Curves.elasticOut,
+    ));
 
     _loadingAnimation = Tween<double>(
       begin: 0.0,
@@ -48,13 +49,23 @@ class _LoadChatbotPageState extends State<LoadChatbotPage>
     _robotAnimationController.forward();
     _loadingAnimationController.repeat();
 
-    Timer(Duration(seconds: 2), () {
-      context.read<BottomNavigationProvider>().setPage(3);
+    // Navigate to chatbot after 4 seconds with safety check
+    _navigationTimer = Timer(Duration(seconds: 4), () {
+      // Check if widget is still mounted before accessing context
+      if (mounted) {
+        try {
+          context.read<BottomNavigationProvider>().setPage(3);
+        } catch (e) {
+          print('Error setting page: $e');
+        }
+      }
     });
   }
 
   @override
   void dispose() {
+    // Cancel timer to prevent it from running after widget is disposed
+    _navigationTimer?.cancel();
     _robotAnimationController.dispose();
     _loadingAnimationController.dispose();
     super.dispose();
@@ -63,42 +74,7 @@ class _LoadChatbotPageState extends State<LoadChatbotPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Champ Bot',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        backgroundColor: Color(0xFF2C3E50),
-        elevation: 0,
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 18,
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/kepala_bot.png',
-                  width: 32,
-                  height: 32,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Icon(
-                      Icons.smart_toy,
-                      color: Color(0xFF2C3E50),
-                      size: 20,
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: Color(0xFFF8FAFC),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -111,104 +87,143 @@ class _LoadChatbotPageState extends State<LoadChatbotPage>
             ],
           ),
         ),
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Header
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Row(
                   children: [
-                    // Animated Robot - using placeholder for now
-                    AnimatedBuilder(
-                      animation: _robotAnimation,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: _robotAnimation.value,
-                          child: Container(
-                            width: 200,
-                            height: 200,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFFFFF8E1).withOpacity(0.5),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.blue.withOpacity(0.2),
-                                  blurRadius: 20,
-                                  spreadRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Image.asset(
-                                'assets/bot_icon.png',
-                                width: 150,
-                                height: 150,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  print('Error loading bot_icon.png: $error');
-                                  return _buildRobotPlaceholder();
-                                },
-                              ),
-                            ),
-                          ),
-                        );
+                    GestureDetector(
+                      onTap: () {
+                        // Cancel timer when going back
+                        _navigationTimer?.cancel();
+                        if (mounted) {
+                          Navigator.pop(context);
+                        }
                       },
-                    ),
-
-                    SizedBox(height: 30),
-
-                    // Loading text
-                    Text(
-                      'Initializing Champ Bot...',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF2C3E50),
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Color(0xFF1E293B),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
                     ),
-
-                    SizedBox(height: 10),
-
+                    SizedBox(width: 12),
                     Text(
-                      'Your assistant to Win like a Champ!',
-                      style: TextStyle(fontSize: 14, color: Color(0xFF7F8C8D)),
-                    ),
-
-                    SizedBox(height: 30),
-
-                    // Loading dots animation
-                    AnimatedBuilder(
-                      animation: _loadingAnimation,
-                      builder: (context, child) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(3, (index) {
-                            double delay = index * 0.3;
-                            double animationValue =
-                                (_loadingAnimation.value - delay).clamp(
-                                  0.0,
-                                  1.0,
-                                );
-                            return Container(
-                              margin: EdgeInsets.symmetric(horizontal: 4),
-                              width: 12,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color(
-                                  0xFF3498DB,
-                                ).withOpacity(0.3 + (0.7 * animationValue)),
-                              ),
-                            );
-                          }),
-                        );
-                      },
+                      'Champ Bot',
+                      style: TextStyle(
+                        color: Color(0xFF1E293B),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+              
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Animated Robot
+                      AnimatedBuilder(
+                        animation: _robotAnimation,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: _robotAnimation.value,
+                            child: Container(
+                              width: 200,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xFFFFF8E1).withOpacity(0.5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.blue.withOpacity(0.2),
+                                    blurRadius: 20,
+                                    spreadRadius: 5,
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Image.asset(
+                                  'assets/bot_icon.png',
+                                  width: 150,
+                                  height: 150,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return _buildRobotPlaceholder();
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      
+                      SizedBox(height: 30),
+                      
+                      // Loading text
+                      Text(
+                        'Menginisialisasi Champ Bot...',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2C3E50),
+                        ),
+                      ),
+                      
+                      SizedBox(height: 10),
+                      
+                      Text(
+                        'Bersiap untuk membantu kamu!',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF7F8C8D),
+                        ),
+                      ),
+                      
+                      SizedBox(height: 30),
+                      
+                      // Loading dots animation
+                      AnimatedBuilder(
+                        animation: _loadingAnimation,
+                        builder: (context, child) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(3, (index) {
+                              double delay = index * 0.3;
+                              double animationValue = (_loadingAnimation.value - delay).clamp(0.0, 1.0);
+                              return Container(
+                                margin: EdgeInsets.symmetric(horizontal: 4),
+                                width: 12,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(0xFF3498DB).withOpacity(
+                                    0.3 + (0.7 * animationValue),
+                                  ),
+                                ),
+                              );
+                            }),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
