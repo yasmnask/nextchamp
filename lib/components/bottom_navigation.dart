@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nextchamp/pages/champbot_page.dart';
+import 'package:nextchamp/pages/community_page.dart';
 import 'package:nextchamp/pages/explore_page.dart';
 import 'package:nextchamp/pages/home_page.dart';
 import 'package:nextchamp/pages/load_chatbot_page.dart';
+import 'package:nextchamp/pages/mentor_page.dart';
+import 'package:nextchamp/pages/learning_page.dart'; // Import page baru
 import 'package:nextchamp/providers/bottom_navigation_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -15,11 +18,11 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigation extends State<BottomNavigation> {
   final List<Widget> _pages = [
-    Center(child: Text('Community Page')),
+    CommunityPage(),
     ExplorePage(),
     HomePage(),
     LoadChatbotPage(),
-    Center(child: Text('Mentor Page')),
+    MentorPage(),
   ];
 
   void _onItemTapped(BuildContext context, int index) {

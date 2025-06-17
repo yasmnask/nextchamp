@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:nextchamp/providers/bottom_navigation_provider.dart';
 import 'package:provider/provider.dart';
-import 'dart:async';
-import 'champbot_page.dart'; // Import the new chatbot screen - assuming this path is correct
 
 class LoadChatbotPage extends StatefulWidget {
   @override
@@ -71,6 +70,7 @@ class _LoadChatbotPageState extends State<LoadChatbotPage>
     // Dispose of animation controllers to prevent memory leaks
     _robotEntranceController.dispose();
     _loadingDotsController.dispose();
+
     super.dispose();
   }
 
