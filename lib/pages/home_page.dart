@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nextchamp/pages/explore_page.dart';
 import 'package:nextchamp/pages/login_page.dart';
+import 'package:nextchamp/pages/course_page.dart'; // Import CoursePage
 import 'package:nextchamp/services/auth_service.dart';
 import 'package:nextchamp/widgets/header_homepage.dart';
 import 'package:nextchamp/widgets/profile_section.dart';
+import 'package:nextchamp/pages/poin_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,6 +17,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 2; // Home tab selected by default
   final _authService = AuthService();
+
+  // Add debug print to track navigation attempts
+  void _navigateToCoursePage() {
+    print("Attempting to navigate to CoursePage");
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => CoursePage()));
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -35,9 +45,11 @@ class _HomePageState extends State<HomePage> {
       case 2: // Home
         // Sudah di Home, tidak perlu navigasi
         break;
-      case 3: // Course Bot
+      case 3: // ChampBot
+        // TODO: Navigasi ke ChampBot page
         break;
       case 4: // Mentor
+        // TODO: Navigasi ke Mentor page
         break;
     }
   }
@@ -124,43 +136,52 @@ class _HomePageState extends State<HomePage> {
               ProfileSection(),
             ],
           ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.star,
-                  color: Color.fromARGB(255, 254, 214, 68),
-                  size: 16,
-                ),
-                SizedBox(width: 8),
-                Text(
-                  '3600 Stars',
-                  style: TextStyle(
-                    color: Color(0xFF334155), // slate-700
-                    fontSize: 13,
-                    fontFamily: 'poppins',
-                    fontWeight: FontWeight.w500,
+          // WRAP THE STARS CONTAINER WITH GESTUREDETECTOR
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PoinPage()),
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
                   ),
-                ),
-                SizedBox(width: 8),
-                Icon(
-                  Icons.star,
-                  color: Color.fromARGB(255, 254, 214, 68),
-                  size: 16,
-                ),
-              ],
+                ],
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.star,
+                    color: Color.fromARGB(255, 254, 214, 68),
+                    size: 16,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    '3600 Stars',
+                    style: TextStyle(
+                      color: Color(0xFF334155), // slate-700
+                      fontSize: 13,
+                      fontFamily: 'poppins',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Icon(
+                    Icons.star,
+                    color: Color.fromARGB(255, 254, 214, 68),
+                    size: 16,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -312,36 +333,49 @@ class _HomePageState extends State<HomePage> {
         crossAxisCount: 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio:
-            2.2, // Diperbesar untuk membuat container lebih kecil tingginya
+        childAspectRatio: 2.2,
       ),
       itemCount: categories.length,
       itemBuilder: (context, index) {
-        return Container(
-          padding: EdgeInsets.all(12), // Padding diperkecil
-          decoration: BoxDecoration(
-            color: Color(0xFFF3EEEA), // Single color for all categories
-            borderRadius: BorderRadius.circular(12), // Border radius diperkecil
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 4,
-                offset: Offset(0, 2),
+        // Make the container clickable with Material and InkWell
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              print("Category tapped: ${categories[index]['title']}");
+              if (index == 1) {
+                // Business Plan Competition
+                _navigateToCoursePage();
+              }
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Color(0xFFF3EEEA),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Center(
-            child: Text(
-              categories[index]['title'] as String,
-              style: TextStyle(
-                color: Color(0xFF1F2937), // gray-800
-                fontSize: 12, // Font size diperkecil
-                fontFamily: 'Times New Roman', // Times New Roman font
-                fontWeight: FontWeight.w500,
+              child: Center(
+                child: Text(
+                  categories[index]['title'] as String,
+                  style: TextStyle(
+                    color: Color(0xFF1F2937),
+                    fontSize: 12,
+                    fontFamily: 'Times New Roman',
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              textAlign: TextAlign.center,
-              maxLines: 2, // Maksimal 2 baris
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         );
@@ -460,45 +494,56 @@ class _HomePageState extends State<HomePage> {
         ),
         itemCount: courses.length,
         itemBuilder: (context, index) {
-          return Column(
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: courses[index]['bgColor'] as Color,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: Offset(0, 2),
+          // Make course items clickable with Material and InkWell
+          return Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                print("Course tapped: ${courses[index]['title']}");
+                _navigateToCoursePage();
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Column(
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: courses[index]['bgColor'] as Color,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Center(
-                  child: Icon(
-                    courses[index]['icon'] as IconData,
-                    color: courses[index]['iconColor'] as Color,
-                    size: 28,
+                    child: Center(
+                      child: Icon(
+                        courses[index]['icon'] as IconData,
+                        color: courses[index]['iconColor'] as Color,
+                        size: 28,
+                      ),
+                    ),
                   ),
-                ),
+                  SizedBox(height: 12),
+                  Text(
+                    courses[index]['title'] as String,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontFamily: 'Times New Roman', // Times New Roman font
+                      fontWeight: FontWeight.w500,
+                      height: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
-              SizedBox(height: 12),
-              Text(
-                courses[index]['title'] as String,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontFamily: 'Times New Roman', // Times New Roman font
-                  fontWeight: FontWeight.w500,
-                  height: 1.2,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+            ),
           );
         },
       ),
@@ -526,7 +571,7 @@ class _HomePageState extends State<HomePage> {
               _buildNavItem(Icons.people_outline, 'Community', 0),
               _buildNavItem(Icons.public, 'Explore', 1),
               _buildNavItem(Icons.home, 'Home', 2),
-              _buildNavItem(Icons.smart_toy_outlined, 'Course Bot', 3),
+              _buildNavItem(Icons.smart_toy_outlined, 'ChampBot', 3),
               _buildNavItem(Icons.school_outlined, 'Mentor', 4),
             ],
           ),
@@ -538,33 +583,40 @@ class _HomePageState extends State<HomePage> {
   Widget _buildNavItem(IconData icon, String label, int index) {
     bool isSelected = _selectedIndex == index;
 
-    return GestureDetector(
-      onTap: () => _onItemTapped(index),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Color(0xFF334155)
-              : Colors.transparent, // slate-700
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.white : Color(0xFF94A3B8), // slate-300
-              size: 24,
-            ),
-            SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Color(0xFF94A3B8),
-                fontSize: 12,
+    // Replace GestureDetector with Material and InkWell for better touch feedback
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _onItemTapped(index),
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Color(0xFF334155)
+                : Colors.transparent, // slate-700
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: isSelected
+                    ? Colors.white
+                    : Color(0xFF94A3B8), // slate-300
+                size: 24,
               ),
-            ),
-          ],
+              SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Color(0xFF94A3B8),
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
