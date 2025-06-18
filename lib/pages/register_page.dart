@@ -31,6 +31,12 @@ class _RegisterPageState extends State<RegisterPage> {
   String? _errorMessage;
   List<String>? _validationErrors;
 
+  @override
+  void initState() {
+    super.initState();
+    SecureStorage.clearToken();
+  }
+
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 

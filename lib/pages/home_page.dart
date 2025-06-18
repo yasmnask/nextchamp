@@ -12,6 +12,8 @@ import 'package:redacted/redacted.dart';
 import '../providers/category_provider.dart';
 import '../providers/course_provider.dart';
 import 'package:nextchamp/core/dio_client.dart';
+import 'package:nextchamp/pages/course_page.dart';
+import 'package:nextchamp/pages/poin_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -35,6 +37,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  // Fixed: Properly structured _loadCategories method
   Future<void> _loadCategories() async {
     if (!mounted) return;
 
@@ -69,6 +72,31 @@ class _HomePageState extends State<HomePage> {
         });
       }
     }
+  }
+
+  // Fixed: Moved outside and properly implemented
+  void _navigateToCoursePage() {
+    print("Attempting to navigate to CoursePage");
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => CoursePage()));
+  }
+
+  // Fixed: Moved outside and properly implemented for navigation
+  void _onItemTapped(int index) {
+    // Handle bottom navigation tapping
+    context.read<BottomNavigationProvider>().setPage(index);
+  }
+
+  // Fixed: Properly handle category selection
+  void _onCategoryTapped(int categoryId, String categoryName) {
+    context.read<AppStateProvider>().setSelectedCategory(
+      categoryId,
+      categoryName,
+    );
+    context.read<BottomNavigationProvider>().setPage(
+      1,
+    ); // Navigate to explore page
   }
 
   Future<void> _loadCourses() async {
@@ -212,33 +240,41 @@ class _HomePageState extends State<HomePage> {
               ProfileSection(),
             ],
           ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.star, color: Color(0xFFFB923C), size: 15),
-                SizedBox(width: 8),
-                Text(
-                  '3600 Stars',
-                  style: TextStyle(
-                    color: Color(0xFF334155), // slate-700
-                    fontSize: 13,
-                    fontFamily: 'poppins',
-                    fontWeight: FontWeight.w500,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PoinPage()),
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
                   ),
-                ),
-              ],
+                ],
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.star, color: Color(0xFFFB923C), size: 15),
+                  SizedBox(width: 8),
+                  Text(
+                    '3600 Stars',
+                    style: TextStyle(
+                      color: Color(0xFF334155), // slate-700
+                      fontSize: 13,
+                      fontFamily: 'poppins',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -249,32 +285,38 @@ class _HomePageState extends State<HomePage> {
   Widget _buildSearchBar() {
     return Padding(
       padding: EdgeInsets.all(17.0),
-      child: Container(
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Color(0xFF64748B), // slate-500 - darker for contrast
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Click here to search the mission!',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontFamily: 'Times New Roman',
+      child: GestureDetector(
+        onTap: () {
+          // Navigate to explore page when search bar is tapped
+          context.read<BottomNavigationProvider>().setPage(1);
+        },
+        child: Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Color(0xFF64748B), // slate-500 - darker for contrast
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 4,
+                offset: Offset(0, 2),
               ),
-            ),
-            Icon(Icons.search, color: Colors.white, size: 20),
-          ],
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Click here to search the mission!',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontFamily: 'Times New Roman',
+                ),
+              ),
+              Icon(Icons.search, color: Colors.white, size: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -479,11 +521,11 @@ class _HomePageState extends State<HomePage> {
             return GestureDetector(
               onTap: () {
                 if (!isLoading && categories.isNotEmpty) {
-                  context.read<AppStateProvider>().setSelectedCategory(
+                  // Fixed: Use the proper method for category selection
+                  _onCategoryTapped(
                     categories[index].id,
                     categories[index].name,
                   );
-                  context.read<BottomNavigationProvider>().setPage(1);
                 }
               },
               child: Container(
@@ -522,48 +564,52 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildCourseRecommendation() {
-    return Container(
-      padding: EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Color(0xFF1E293B), // slate-800
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.1), // yellow-400
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
-                ),
-              ],
+    return GestureDetector(
+      onTap:
+          _navigateToCoursePage, // Fixed: Now properly calls the navigation method
+      child: Container(
+        padding: EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Color(0xFF1E293B), // slate-800
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4,
+              offset: Offset(0, 2),
             ),
-            child: Center(child: Text('📚', style: TextStyle(fontSize: 32))),
-          ),
-          SizedBox(width: 16),
-          Text(
-            'The course you might like',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontFamily: 'Times New Roman',
-              fontWeight: FontWeight.w500,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.1), // yellow-400
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Center(child: Text('📚', style: TextStyle(fontSize: 32))),
             ),
-          ),
-        ],
+            SizedBox(width: 16),
+            Text(
+              'The course you might like',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontFamily: 'Times New Roman',
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -720,83 +766,91 @@ class _HomePageState extends State<HomePage> {
                   ? null
                   : courses[index].iconUrl;
 
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: bgColor,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: iconUrl != null && iconUrl.isNotEmpty
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                _buildMediaUrl(iconUrl),
-                                width: 32,
-                                height: 32,
-                                fit: BoxFit.cover,
-                                headers: {'Accept': 'image/*'},
-                                errorBuilder: (context, error, stackTrace) {
-                                  print('Failed to load image: $iconUrl');
-                                  print(
-                                    'Full URL attempted: ${_buildMediaUrl(iconUrl)}',
-                                  );
-                                  return Icon(
-                                    fallbackIcon,
-                                    color: iconColor,
-                                    size: 28,
-                                  );
-                                },
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                iconColor,
-                                              ),
-                                        ),
-                                      );
-                                    },
-                              ),
-                            )
-                          : Icon(fallbackIcon, color: iconColor, size: 28),
-                    ),
-                  ).redacted(context: context, redact: isLoading),
-                  SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Text(
-                      courseTitle,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontFamily: 'Times New Roman',
-                        fontWeight: FontWeight.w500,
-                        height: 1.1,
+              return InkWell(
+                onTap: () {
+                  if (courseTitle.contains("Business Plan")) {
+                    _navigateToCoursePage();
+                  }
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      textAlign: TextAlign.center,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
+                      child: Center(
+                        child: iconUrl != null && iconUrl.isNotEmpty
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  _buildMediaUrl(iconUrl),
+                                  width: 32,
+                                  height: 32,
+                                  fit: BoxFit.cover,
+                                  headers: {'Accept': 'image/*'},
+                                  errorBuilder: (context, error, stackTrace) {
+                                    print('Failed to load image: $iconUrl');
+                                    print(
+                                      'Full URL attempted: ${_buildMediaUrl(iconUrl)}',
+                                    );
+                                    return Icon(
+                                      fallbackIcon,
+                                      color: iconColor,
+                                      size: 28,
+                                    );
+                                  },
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                        if (loadingProgress == null)
+                                          return child;
+                                        return SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                  iconColor,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                ),
+                              )
+                            : Icon(fallbackIcon, color: iconColor, size: 28),
+                      ),
                     ).redacted(context: context, redact: isLoading),
-                  ),
-                ],
+                    SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Text(
+                        courseTitle,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontFamily: 'Times New Roman',
+                          fontWeight: FontWeight.w500,
+                          height: 1.1,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                      ).redacted(context: context, redact: isLoading),
+                    ),
+                  ],
+                ),
               );
             },
           ),
