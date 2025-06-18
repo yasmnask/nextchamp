@@ -11,33 +11,7 @@ class CoursePage extends StatefulWidget {
 }
 
 class _CoursePageState extends State<CoursePage> {
-  int _selectedIndex = 2; // Home tab selected by default
   bool _isContentExpanded = false;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    // Navigation based on selected tab
-    switch (index) {
-      case 0: // Community
-        // TODO: Navigate to Community page
-        break;
-      case 1: // Explore
-        // TODO: Navigate to Explore page
-        break;
-      case 2: // Home
-        Navigator.pop(context); // Go back to HomePage
-        break;
-      case 3: // ChampBot
-        // TODO: Navigate to ChampBot page
-        break;
-      case 4: // Mentor
-        // TODO: Navigate to Mentor page
-        break;
-    }
-  }
 
   void _showJoinCourseConfirmation() {
     showDialog(
@@ -366,7 +340,6 @@ class _CoursePageState extends State<CoursePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar dihapus untuk menghilangkan duplikasi header
       body: Column(
         children: [
           _buildHeader(),
@@ -380,14 +353,13 @@ class _CoursePageState extends State<CoursePage> {
                   _buildDescription(),
                   _buildRequirements(),
                   _buildActionButtons(),
-                  SizedBox(height: 20), // Space for bottom navigation
+                  SizedBox(height: 50), // Space for bottom navigation
                 ],
               ),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNavigation(),
     );
   }
 
@@ -572,7 +544,7 @@ class _CoursePageState extends State<CoursePage> {
                 ),
               ),
               Text(
-                'Safwa Atifah Rahayu',
+                'Zakiyah Yasmin',
                 style: TextStyle(
                   fontSize: 14,
                   color: Color(0xFF64748B),
@@ -959,77 +931,6 @@ class _CoursePageState extends State<CoursePage> {
             child: Icon(Icons.play_arrow, color: Colors.white, size: 20),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigation() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Color(0xFF1E293B), // slate-800
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.people_outline, 'Community', 0),
-              _buildNavItem(Icons.public, 'Explore', 1),
-              _buildNavItem(Icons.home, 'Home', 2),
-              _buildNavItem(Icons.smart_toy_outlined, 'ChampBot', 3),
-              _buildNavItem(Icons.school_outlined, 'Mentor', 4),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    bool isSelected = _selectedIndex == index;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => _onItemTapped(index),
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? Color(0xFF334155)
-                : Colors.transparent, // slate-700
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                color: isSelected
-                    ? Colors.white
-                    : Color(0xFF94A3B8), // slate-300
-                size: 24,
-              ),
-              SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Color(0xFF94A3B8),
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
