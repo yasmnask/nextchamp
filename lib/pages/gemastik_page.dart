@@ -35,7 +35,7 @@ class GemastikPage extends StatelessWidget {
               },
             ),
           ),
-          
+
           Column(
             children: [
               _buildHeader(context),
@@ -51,7 +51,9 @@ class GemastikPage extends StatelessWidget {
                         _buildGroupCard(context),
                         SizedBox(height: 24),
                         _buildGroupPreview(),
-                        SizedBox(height: 100), // Extra space for bottom navigation
+                        SizedBox(
+                          height: 100,
+                        ), // Extra space for bottom navigation
                       ],
                     ),
                   ),
@@ -93,11 +95,7 @@ class GemastikPage extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: Colors.white.withOpacity(0.2),
                   ),
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+                  child: Icon(Icons.arrow_back, color: Colors.white, size: 20),
                 ),
               ),
               SizedBox(width: 12),
@@ -149,7 +147,9 @@ class GemastikPage extends StatelessWidget {
                   return Container(
                     decoration: BoxDecoration(
                       color: Color(0xFFFEF3C7),
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(16),
+                      ),
                     ),
                     child: Center(
                       child: Icon(
@@ -163,7 +163,7 @@ class GemastikPage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Content
           Padding(
             padding: EdgeInsets.all(20),
@@ -196,7 +196,10 @@ class GemastikPage extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF1E293B),
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
                       ),
@@ -347,7 +350,8 @@ class GemastikPage extends StatelessWidget {
         _buildPostCard(
           username: '@Pandu',
           timeAgo: '2h mins ago',
-          content: 'Nih guys aku mau poster lomba nih, ada yang mau ikutan? Kalo mau ikutan langsung aja ya, jangan lupa baca syarat dan ketentuannya dulu ya!',
+          content:
+              'Nih guys aku mau poster lomba nih, ada yang mau ikutan? Kalo mau ikutan langsung aja ya, jangan lupa baca syarat dan ketentuannya dulu ya!',
           imageName: 'gemastik_poster.jpg',
           likes: 24,
           comments: 12,
@@ -357,7 +361,8 @@ class GemastikPage extends StatelessWidget {
         _buildPostCard(
           username: '@Pandu',
           timeAgo: '1 day ago',
-          content: 'guys mau tanya dong, kalau mau daftar lomba nih, syaratnya apa aja sih? yang pernah ikut lomba bagi pengalaman dong, makasih',
+          content:
+              'guys mau tanya dong, kalau mau daftar lomba nih, syaratnya apa aja sih? yang pernah ikut lomba bagi pengalaman dong, makasih',
           imageName: null,
           likes: 18,
           comments: 8,
@@ -428,19 +433,16 @@ class GemastikPage extends StatelessWidget {
                     ),
                     Text(
                       timeAgo,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF64748B),
-                      ),
+                      style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          
+
           SizedBox(height: 12),
-          
+
           // Content
           Text(
             content,
@@ -451,16 +453,14 @@ class GemastikPage extends StatelessWidget {
               fontFamily: 'Times New Roman',
             ),
           ),
-          
+
           // Image if exists
           if (imageName != null) ...[
             SizedBox(height: 12),
             Container(
               width: double.infinity,
               height: 150,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-              ),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.asset(
@@ -485,15 +485,18 @@ class GemastikPage extends StatelessWidget {
               ),
             ),
           ],
-          
+
           SizedBox(height: 12),
-          
+
           // Actions
           Row(
             children: [
               _buildActionButton(Icons.favorite_border, likes.toString()),
               SizedBox(width: 20),
-              _buildActionButton(Icons.chat_bubble_outline, comments.toString()),
+              _buildActionButton(
+                Icons.chat_bubble_outline,
+                comments.toString(),
+              ),
               SizedBox(width: 20),
               _buildActionButton(Icons.share_outlined, shares.toString()),
             ],
@@ -506,19 +509,9 @@ class GemastikPage extends StatelessWidget {
   Widget _buildActionButton(IconData icon, String count) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Color(0xFF64748B),
-        ),
+        Icon(icon, size: 20, color: Color(0xFF64748B)),
         SizedBox(width: 4),
-        Text(
-          count,
-          style: TextStyle(
-            fontSize: 12,
-            color: Color(0xFF64748B),
-          ),
-        ),
+        Text(count, style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
       ],
     );
   }
@@ -527,11 +520,8 @@ class GemastikPage extends StatelessWidget {
 // Chat Group Page Class - Added directly to avoid import issues
 class ChatGroupPage extends StatefulWidget {
   final String groupName;
-  
-  const ChatGroupPage({
-    Key? key,
-    required this.groupName,
-  }) : super(key: key);
+
+  const ChatGroupPage({Key? key, required this.groupName}) : super(key: key);
 
   @override
   _ChatGroupPageState createState() => _ChatGroupPageState();
@@ -540,7 +530,7 @@ class ChatGroupPage extends StatefulWidget {
 class _ChatGroupPageState extends State<ChatGroupPage> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   // List untuk menyimpan pesan chat grup
   List<GroupChatMessage> messages = [
     GroupChatMessage(
@@ -594,7 +584,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
               },
             ),
           ),
-          
+
           Column(
             children: [
               _buildHeader(context),
@@ -635,7 +625,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
       ),
       child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Row(
             children: [
               GestureDetector(
@@ -646,11 +636,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
                     shape: BoxShape.circle,
                     color: Colors.white.withOpacity(0.2),
                   ),
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+                  child: Icon(Icons.arrow_back, color: Colors.white, size: 20),
                 ),
               ),
               SizedBox(width: 12),
@@ -700,8 +686,8 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
     return Padding(
       padding: EdgeInsets.only(bottom: 16),
       child: Row(
-        mainAxisAlignment: message.isUser 
-            ? MainAxisAlignment.end 
+        mainAxisAlignment: message.isUser
+            ? MainAxisAlignment.end
             : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -727,7 +713,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
               ),
             ),
           ],
-          
+
           // Message bubble
           Flexible(
             child: Container(
@@ -736,7 +722,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
               ),
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: message.isUser 
+                color: message.isUser
                     ? Color(0xFF475569).withOpacity(0.9) // slate-600 untuk user
                     : Colors.white.withOpacity(0.9), // putih untuk orang lain
                 borderRadius: BorderRadius.circular(18),
@@ -751,8 +737,8 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
               child: Text(
                 message.text,
                 style: TextStyle(
-                  color: message.isUser 
-                      ? Colors.white 
+                  color: message.isUser
+                      ? Colors.white
                       : Color(0xFF374151), // Dark gray untuk pesan orang lain
                   fontSize: 14,
                   height: 1.4,
@@ -761,7 +747,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
               ),
             ),
           ),
-          
+
           if (message.isUser) ...[
             // Avatar untuk pesan user
             Container(
@@ -854,11 +840,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
                     ),
                   ],
                 ),
-                child: Icon(
-                  Icons.send,
-                  color: Colors.white,
-                  size: 20,
-                ),
+                child: Icon(Icons.send, color: Colors.white, size: 20),
               ),
             ),
           ],
@@ -889,7 +871,9 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
               Expanded(child: _buildNavItem(Icons.public, 'Explore', 1)),
               Expanded(child: _buildNavItem(Icons.home, 'Home', 2)),
               Expanded(child: _buildNavItem(Icons.smart_toy, 'Champ Bot', 3)),
-              Expanded(child: _buildNavItem(Icons.school_outlined, 'Mentor', 4)),
+              Expanded(
+                child: _buildNavItem(Icons.school_outlined, 'Mentor', 4),
+              ),
             ],
           ),
         ),
@@ -943,14 +927,16 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
     String messageText = _messageController.text.trim();
     if (messageText.isNotEmpty) {
       setState(() {
-        messages.add(GroupChatMessage(
-          text: messageText,
-          isUser: true,
-          timestamp: DateTime.now(),
-        ));
+        messages.add(
+          GroupChatMessage(
+            text: messageText,
+            isUser: true,
+            timestamp: DateTime.now(),
+          ),
+        );
         _messageController.clear();
       });
-      
+
       // Scroll to bottom
       _scrollToBottom();
     }

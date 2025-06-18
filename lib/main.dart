@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nextchamp/pages/wrapper_page.dart';
 import 'package:nextchamp/providers/app_state_provider.dart';
 import 'package:nextchamp/providers/bottom_navigation_provider.dart';
+import 'package:nextchamp/providers/mentor_provider.dart';
 import 'package:nextchamp/providers/user_provider.dart';
 import 'package:nextchamp/providers/category_provider.dart';
 import 'package:nextchamp/providers/course_provider.dart';
@@ -28,6 +29,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => CourseProvider()),
+        ChangeNotifierProvider(create: (_) => MentorProvider()),
         Provider(create: (_) => GeminiService()),
         Provider(create: (_) => ChatService()),
       ],

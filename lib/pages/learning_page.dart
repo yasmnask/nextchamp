@@ -17,15 +17,23 @@ class _LearningPageState extends State<LearningPage> {
   final List<Map<String, dynamic>> _allGroups = [
     {
       'title': 'Kebut GEMASTIK 2026!',
-      'description': 'Grup belajar intensif untuk persiapan GEMASTIK 2026. Sharing tips, strategi, dan tips terbaik biar lolos GEMASTIK. Yuk gabung!',
+      'description':
+          'Grup belajar intensif untuk persiapan GEMASTIK 2026. Sharing tips, strategi, dan tips terbaik biar lolos GEMASTIK. Yuk gabung!',
       'imageName': 'gemastik_group.jpg',
       'backgroundColor': Color(0xFFFEF3C7),
-      'keywords': ['gemastik', 'kompetisi', 'programming', 'teknologi', 'lomba'],
+      'keywords': [
+        'gemastik',
+        'kompetisi',
+        'programming',
+        'teknologi',
+        'lomba',
+      ],
       'onTap': 'gemastik_page',
     },
     {
       'title': 'Kita Cinta Matematika',
-      'description': 'Komunitas pecinta matematika dari berbagai jenjang. Cocok buat kamu yang ingin eksplor dunia matematika atau baru belajar dasar.',
+      'description':
+          'Komunitas pecinta matematika dari berbagai jenjang. Cocok buat kamu yang ingin eksplor dunia matematika atau baru belajar dasar.',
       'imageName': 'math_group.jpg',
       'backgroundColor': Color(0xFFDCFCE7),
       'keywords': ['matematika', 'math', 'hitung', 'rumus', 'belajar'],
@@ -33,7 +41,8 @@ class _LearningPageState extends State<LearningPage> {
     },
     {
       'title': 'Tips n Trick PKM',
-      'description': 'Belajar bareng cara bikin proposal PKM yang lolos! Dibimbing dengan sharing pengalaman dari tim yang sudah pernah di PKM.',
+      'description':
+          'Belajar bareng cara bikin proposal PKM yang lolos! Dibimbing dengan sharing pengalaman dari tim yang sudah pernah di PKM.',
       'imageName': 'pkm_group.png',
       'backgroundColor': Color(0xFFDBEAFE),
       'keywords': ['pkm', 'proposal', 'penelitian', 'mahasiswa', 'kreativitas'],
@@ -41,18 +50,32 @@ class _LearningPageState extends State<LearningPage> {
     },
     {
       'title': 'Kejar Beasiswa Mapres',
-      'description': 'Komunitas mahasiswa berprestasi yang saling berbagi tips beasiswa, lomba, dan prestasi akademik non-akademik.',
+      'description':
+          'Komunitas mahasiswa berprestasi yang saling berbagi tips beasiswa, lomba, dan prestasi akademik non-akademik.',
       'imageName': 'mapres_group.jpg',
       'backgroundColor': Color(0xFFF3E8FF),
-      'keywords': ['beasiswa', 'mapres', 'prestasi', 'scholarship', 'mahasiswa'],
+      'keywords': [
+        'beasiswa',
+        'mapres',
+        'prestasi',
+        'scholarship',
+        'mahasiswa',
+      ],
       'onTap': null,
     },
     {
       'title': 'Public Speaking Club',
-      'description': 'Komunitas seru untuk melatih kemampuan berbicara di depan umum. Cocok buat kamu yang mau jadi lebih percaya diri!',
+      'description':
+          'Komunitas seru untuk melatih kemampuan berbicara di depan umum. Cocok buat kamu yang mau jadi lebih percaya diri!',
       'imageName': 'speaking_group.jpg',
       'backgroundColor': Color(0xFFFECACA),
-      'keywords': ['public speaking', 'berbicara', 'presentasi', 'komunikasi', 'percaya diri'],
+      'keywords': [
+        'public speaking',
+        'berbicara',
+        'presentasi',
+        'komunikasi',
+        'percaya diri',
+      ],
       'onTap': null,
     },
   ];
@@ -77,18 +100,20 @@ class _LearningPageState extends State<LearningPage> {
     setState(() {
       _searchQuery = _searchController.text.toLowerCase();
       _isSearching = _searchQuery.isNotEmpty;
-      
+
       if (_searchQuery.isEmpty) {
         _filteredGroups = _allGroups;
       } else {
         _filteredGroups = _allGroups.where((group) {
           final title = group['title'].toString().toLowerCase();
           final description = group['description'].toString().toLowerCase();
-          final keywords = (group['keywords'] as List<String>).join(' ').toLowerCase();
-          
-          return title.contains(_searchQuery) || 
-                 description.contains(_searchQuery) ||
-                 keywords.contains(_searchQuery);
+          final keywords = (group['keywords'] as List<String>)
+              .join(' ')
+              .toLowerCase();
+
+          return title.contains(_searchQuery) ||
+              description.contains(_searchQuery) ||
+              keywords.contains(_searchQuery);
         }).toList();
       }
     });
@@ -127,7 +152,7 @@ class _LearningPageState extends State<LearningPage> {
               },
             ),
           ),
-          
+
           Column(
             children: [
               _buildHeader(context),
@@ -143,7 +168,9 @@ class _LearningPageState extends State<LearningPage> {
                         _buildSearchBar(),
                         SizedBox(height: 24),
                         _buildContent(),
-                        SizedBox(height: 100), // Extra space for bottom navigation
+                        SizedBox(
+                          height: 100,
+                        ), // Extra space for bottom navigation
                       ],
                     ),
                   ),
@@ -174,7 +201,7 @@ class _LearningPageState extends State<LearningPage> {
       ),
       child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Row(
             children: [
               GestureDetector(
@@ -185,11 +212,7 @@ class _LearningPageState extends State<LearningPage> {
                     shape: BoxShape.circle,
                     color: Colors.white.withOpacity(0.2),
                   ),
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+                  child: Icon(Icons.arrow_back, color: Colors.white, size: 20),
                 ),
               ),
               SizedBox(width: 12),
@@ -282,16 +305,20 @@ class _LearningPageState extends State<LearningPage> {
           ),
           SizedBox(height: 16),
         ],
-        ..._filteredGroups.map((group) => Padding(
-          padding: EdgeInsets.only(bottom: 12),
-          child: _buildGroupCard(
-            title: group['title'],
-            description: group['description'],
-            imageName: group['imageName'],
-            backgroundColor: group['backgroundColor'],
-            onTap: group['onTap'],
-          ),
-        )).toList(),
+        ..._filteredGroups
+            .map(
+              (group) => Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: _buildGroupCard(
+                  title: group['title'],
+                  description: group['description'],
+                  imageName: group['imageName'],
+                  backgroundColor: group['backgroundColor'],
+                  onTap: group['onTap'],
+                ),
+              ),
+            )
+            .toList(),
       ],
     );
   }
@@ -377,9 +404,9 @@ class _LearningPageState extends State<LearningPage> {
             MaterialPageRoute(builder: (context) => GemastikPage()),
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$title clicked!')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('$title clicked!')));
         }
       },
       child: Container(
@@ -428,9 +455,9 @@ class _LearningPageState extends State<LearningPage> {
                 ),
               ),
             ),
-            
+
             SizedBox(width: 16),
-            
+
             // Content
             Expanded(
               child: Column(

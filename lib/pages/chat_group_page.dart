@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 
 class ChatGroupPage extends StatefulWidget {
   final String groupName;
-  
-  const ChatGroupPage({
-    Key? key,
-    required this.groupName,
-  }) : super(key: key);
+
+  const ChatGroupPage({Key? key, required this.groupName}) : super(key: key);
 
   @override
   _ChatGroupPageState createState() => _ChatGroupPageState();
@@ -15,7 +12,7 @@ class ChatGroupPage extends StatefulWidget {
 class _ChatGroupPageState extends State<ChatGroupPage> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   // List untuk menyimpan pesan chat grup
   List<GroupChatMessage> messages = [
     GroupChatMessage(
@@ -30,7 +27,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
       timestamp: DateTime.now().subtract(Duration(minutes: 8)),
     ),
     GroupChatMessage(
-      text: "Terima kasih teman! Thank you yaa, selamat bergabung!",
+      text: "Selamat bergabung temaan!",
       isUser: false,
       senderName: "Terima kasih teman!",
       timestamp: DateTime.now().subtract(Duration(minutes: 5)),
@@ -69,7 +66,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
               },
             ),
           ),
-          
+
           Column(
             children: [
               _buildHeader(context),
@@ -84,7 +81,6 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
                 ),
               ),
               _buildInputArea(),
-              _buildBottomNavigation(context),
             ],
           ),
         ],
@@ -121,11 +117,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
                     shape: BoxShape.circle,
                     color: Colors.white.withOpacity(0.2),
                   ),
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+                  child: Icon(Icons.arrow_back, color: Colors.white, size: 20),
                 ),
               ),
               SizedBox(width: 12),
@@ -175,8 +167,8 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
     return Padding(
       padding: EdgeInsets.only(bottom: 16),
       child: Row(
-        mainAxisAlignment: message.isUser 
-            ? MainAxisAlignment.end 
+        mainAxisAlignment: message.isUser
+            ? MainAxisAlignment.end
             : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -202,7 +194,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
               ),
             ),
           ],
-          
+
           // Message bubble
           Flexible(
             child: Container(
@@ -211,7 +203,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
               ),
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: message.isUser 
+                color: message.isUser
                     ? Color(0xFF475569).withOpacity(0.9) // slate-600 untuk user
                     : Colors.white.withOpacity(0.9), // putih untuk orang lain
                 borderRadius: BorderRadius.circular(18),
@@ -226,8 +218,8 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
               child: Text(
                 message.text,
                 style: TextStyle(
-                  color: message.isUser 
-                      ? Colors.white 
+                  color: message.isUser
+                      ? Colors.white
                       : Color(0xFF374151), // Dark gray untuk pesan orang lain
                   fontSize: 14,
                   height: 1.4,
@@ -236,7 +228,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
               ),
             ),
           ),
-          
+
           if (message.isUser) ...[
             // Avatar untuk pesan user
             Container(
@@ -329,84 +321,8 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
                     ),
                   ],
                 ),
-                child: Icon(
-                  Icons.send,
-                  color: Colors.white,
-                  size: 20,
-                ),
+                child: Icon(Icons.send, color: Colors.white, size: 20),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigation(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Color(0xFF475569), // slate-600
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Expanded(child: _buildNavItem(Icons.people, 'Community', 0)),
-              Expanded(child: _buildNavItem(Icons.public, 'Explore', 1)),
-              Expanded(child: _buildNavItem(Icons.home, 'Home', 2)),
-              Expanded(child: _buildNavItem(Icons.smart_toy, 'Champ Bot', 3)),
-              Expanded(child: _buildNavItem(Icons.school_outlined, 'Mentor', 4)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    bool isActive = index == 0; // Community active karena ini grup chat
-
-    return GestureDetector(
-      onTap: () {
-        // Navigation logic
-        if (index == 2) {
-          Navigator.popUntil(context, (route) => route.isFirst);
-        }
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-        margin: EdgeInsets.symmetric(horizontal: 2),
-        decoration: BoxDecoration(
-          color: isActive ? Color(0xFF334155) : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isActive ? Colors.white : Color(0xFF94A3B8),
-              size: 20,
-            ),
-            SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(
-                color: isActive ? Colors.white : Color(0xFF94A3B8),
-                fontSize: 10,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -418,14 +334,16 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
     String messageText = _messageController.text.trim();
     if (messageText.isNotEmpty) {
       setState(() {
-        messages.add(GroupChatMessage(
-          text: messageText,
-          isUser: true,
-          timestamp: DateTime.now(),
-        ));
+        messages.add(
+          GroupChatMessage(
+            text: messageText,
+            isUser: true,
+            timestamp: DateTime.now(),
+          ),
+        );
         _messageController.clear();
       });
-      
+
       // Scroll to bottom
       _scrollToBottom();
     }

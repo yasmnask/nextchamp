@@ -190,4 +190,117 @@ class StrapiQueryHelper {
 
     return queryBuilder.build();
   }
+
+  /// Helper for building mentor queries
+  static String buildMentorQuery({
+    String? searchTerm,
+    String? sortField,
+    bool sortDesc = false,
+    int? page,
+    int? pageSize,
+    int? categoryId,
+    bool? isFeatured,
+    bool includeProfile = true,
+    bool includeCategory = true,
+  }) {
+    final queryBuilder = StrapiQueryBuilder();
+
+    // Add search if provided
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      queryBuilder.orContains('name', searchTerm);
+      queryBuilder.orContains('description', searchTerm);
+    }
+
+    // Add category filter
+    if (categoryId != null) {
+      queryBuilder.filter('category.id', categoryId);
+    }
+
+    // Add featured filter
+    if (isFeatured != null) {
+      queryBuilder.filter('is_featured', isFeatured);
+    }
+
+    // Add sorting
+    if (sortField != null) {
+      queryBuilder.sortBy(sortField, desc: sortDesc);
+    } else {
+      queryBuilder.sortBy('createdAt', desc: true);
+    }
+
+    // Add pagination if provided
+    if (page != null && pageSize != null) {
+      queryBuilder.paginate(page, pageSize);
+    }
+
+    // Add fields to select
+    queryBuilder.select([
+      'name',
+      'description',
+      'is_featured',
+      'createdAt',
+      'updatedAt',
+    ]);
+
+    // Populate profile image
+    if (includeProfile) {
+      queryBuilder.populateField(
+        'profile',
+        fields: ['url', 'alternativeText', 'name', 'width', 'height'],
+      );
+    }
+
+    // Populate category
+    if (includeCategory) {
+      queryBuilder.populateField('category', fields: ['name']);
+    }
+
+    return queryBuilder.build();
+  }
+
+  /// Helper for building single mentor query
+  static String buildSingleMentorQuery({
+    bool includeProfile = true,
+    bool includeCategory = true,
+  }) {
+    final queryBuilder = StrapiQueryBuilder();
+
+    // Select all fields for single mentor
+    queryBuilder.select([
+      'name',
+      'description',
+      'is_featured',
+      'createdAt',
+      'updatedAt',
+    ]);
+
+    // Populate profile image
+    if (includeProfile) {
+      queryBuilder.populateField(
+        'profile',
+        fields: ['url', 'alternativeText', 'name', 'width', 'height'],
+      );
+    }
+
+    // Populate category
+    if (includeCategory) {
+      queryBuilder.populateField('category', fields: ['name']);
+    }
+
+    return queryBuilder.build();
+  }
+
+  /// Helper for building featured mentor queries
+  static String buildFeaturedMentorQuery({
+    String? sortField,
+    bool sortDesc = false,
+    int? pageSize,
+  }) {
+    return buildMentorQuery(
+      isFeatured: true,
+      sortField: sortField,
+      sortDesc: sortDesc,
+      pageSize: pageSize,
+    );
+  }
 }

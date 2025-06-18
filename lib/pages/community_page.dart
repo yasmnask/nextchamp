@@ -37,7 +37,7 @@ class CommunityPage extends StatelessWidget {
               },
             ),
           ),
-          
+
           Column(
             children: [
               _buildHeader(context),
@@ -84,7 +84,7 @@ class CommunityPage extends StatelessWidget {
       ),
       child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Row(
             children: [
               Text(
@@ -147,7 +147,8 @@ class CommunityPage extends StatelessWidget {
         _buildCommunityCard(
           context: context,
           title: 'Join Learning Group',
-          subtitle: 'A beginner-friendly course designed to help you build a professional mindset and skills',
+          subtitle:
+              'A beginner-friendly course designed to help you build a professional mindset and skills',
           imageName: 'join_learning_group',
           onTap: () {
             Navigator.push(
@@ -160,7 +161,8 @@ class CommunityPage extends StatelessWidget {
         _buildCommunityCard(
           context: context,
           title: 'Forum Discussion',
-          subtitle: 'Collaborate and sharpen your research skills to solve widespread life matters',
+          subtitle:
+              'Collaborate and sharpen your research skills to solve widespread life matters',
           imageName: 'forum_discuss',
           onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -172,12 +174,13 @@ class CommunityPage extends StatelessWidget {
         _buildCommunityCard(
           context: context,
           title: 'Community Event',
-          subtitle: 'Learn how to manage projects effectively and work across without a miss',
+          subtitle:
+              'Learn how to manage projects effectively and work across without a miss',
           imageName: 'community_event',
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Community Event clicked!')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Community Event clicked!')));
           },
         ),
       ],
