@@ -264,11 +264,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 // Title
                 Text(
-                  'Create New Account',
+                  'Buat Akun Baru',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2C3E50),
+                    color: Color.fromARGB(255, 147, 201, 255),
                   ),
                 ),
 
